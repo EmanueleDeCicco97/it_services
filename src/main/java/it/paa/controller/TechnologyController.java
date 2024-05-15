@@ -167,8 +167,8 @@ public class TechnologyController {
     // dei progetti in cui sono utilizzate queste tecnologie.
     @GET
     @RolesAllowed({"admin", "project manager"})
-    // ritengo opportuno come autorizzazione avanzata che sia l'admin che il pm
-    @Path("/most-requested")                  // possono vedere dove l'andamento delle varie tecnologie
+    // ritengo opportuno come autorizzazione avanzata che sia l'admin che il pm possono vedere l'andamento delle varie tecnologie
+    @Path("/most-requested")
     public Response getMostCommonTechnology() {
         try {
 

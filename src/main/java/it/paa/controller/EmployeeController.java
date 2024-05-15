@@ -42,8 +42,8 @@ public class EmployeeController {
     // un dipendente specifico e visualizzare i dettagli dei progetti e dei clienti coinvolti
     @GET
     @RolesAllowed({"admin", "project manager"})
-    //ritengo opportuno come autorizzazione avanzata che sia l'admin che il pm
-    @Path("/{id}")                                   // possono vedere dove è coinvolto un dipendente
+    //ritengo opportuno come autorizzazione avanzata che sia l'admin che il pm possono vedere dove è coinvolto un dipendente
+    @Path("/{id}")
     public Response getEmployeeById(@PathParam("id") Long id) {
         try {
             Employee employee = employeeService.findById(id);
