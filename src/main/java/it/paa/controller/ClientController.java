@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Path("/client")
 public class ClientController {
 
-    @Inject
+    @Inject//
     private ClientService clientService;
 
     @Inject
