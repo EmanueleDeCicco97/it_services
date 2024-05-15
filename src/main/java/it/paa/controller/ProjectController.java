@@ -50,6 +50,8 @@ public class ProjectController {
 
         LocalDate startDate = null;
         try {
+
+
             if (startDateStr != null) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                 // Effettuo il parsing della stringa utilizzando il formato definito
@@ -64,6 +66,11 @@ public class ProjectController {
         }
 
         List<Project> projects = projectService.findAllByAttributes(name, startDate);
+
+
+        if (securityContext.isUserInRole("project manager")){
+         projects = projects.stream().filter(project -> project.getUser().getUsername().equals(securityContext.getUserPrincipal().getName())).toList();
+        }
 
         if (projects.isEmpty()) {
             return Response.noContent().build();
