@@ -1,0 +1,180 @@
+package it.paa.controller;
+
+
+import it.paa.dto.TechnologyDto;
+import it.paa.model.Project;
+import it.paa.model.Technology;
+import it.paa.service.EmployeeService;
+import it.paa.service.TechnologyService;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityExistsException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@RolesAllowed("admin")
+@Path("/technology")
+public class TechnologyController {
+    @Inject
+    private TechnologyService technologyService;
+    @Inject
+    private Validator validator;
+    @Inject
+    EmployeeService employeeService;
+
+    @GET //metodo per recuperare tutte le tecnologie in base ai criteri forniti
+    public Response getAllTechnologies(@QueryParam("name") String name,
+                                       @QueryParam("experienceLevel") String experienceLevel) {
+        List<Technology> technologies = technologyService.findAllByAttributes(name, experienceLevel);
+        if (technologies.isEmpty()) {
+            return Response.noContent().build();
+        }
+        return Response.ok(technologies).build();
+    }
+
+    @GET
+    @Path("/{id}") //metodo per recuperare una tecnologia in base all'id
+    public Response getTechnologyById(@PathParam("id") Long id) {
+        try {
+            Technology technology = technologyService.findById(id);
+
+            return Response.ok(technology).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+    }
+
+    @POST //metodo per salvare una tecnologia
+    public Response addTechnology(TechnologyDto technologyDto) {
+        try {
+
+            // validazione dell'entità Project
+            Set<ConstraintViolation<TechnologyDto>> violations = validator.validate(technologyDto);
+
+            if (!violations.isEmpty()) {
+                // Gestione degli errori di validazione
+                String errorMessage = violations.stream()
+                        .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
+                        .collect(Collectors.joining("\n"));
+
+                return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).type(MediaType.TEXT_PLAIN).build();
+            }
+
+            Technology technology = new Technology();
+            technology.setName(technologyDto.getName());
+            technology.setRequiredExperienceLevel(technologyDto.getRequiredExperienceLevel());
+            technology.setDescription(technologyDto.getDescription());
+
+
+            technologyService.save(technology);
+
+            return Response.status(Response.Status.CREATED).type(MediaType.TEXT_PLAIN).entity("Technology created successfully").build();
+
+        } catch (EntityExistsException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+        }
+    }
+
+    @PUT
+    @Path("/{id}") //metodo per aggiornare una tecnologia
+    public Response updateTechnology(@PathParam("id") Long id, TechnologyDto technologyDto) {
+
+        try {
+            Technology existingTechnology = technologyService.findById(id);
+
+            // Aggiorno le informazioni della tecnologia esistente con quelle fornite nel DTO
+            existingTechnology.setName(technologyDto.getName());
+            existingTechnology.setRequiredExperienceLevel(technologyDto.getRequiredExperienceLevel());
+            existingTechnology.setDescription(technologyDto.getDescription());
+
+            // Validazione dell'entità Project
+            Set<ConstraintViolation<TechnologyDto>> violations = validator.validate(technologyDto);
+
+            if (!violations.isEmpty()) {
+                // Gestione degli errori di validazione
+                String errorMessage = violations.stream()
+                        .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
+                        .collect(Collectors.joining("\n"));
+
+                return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).type(MediaType.TEXT_PLAIN).build();
+            }
+            Technology updatedTechnology = technologyService.update(existingTechnology);
+            return Response.ok(updatedTechnology).build();
+
+        } catch (NotFoundException e) {
+
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+    }
+
+    @DELETE //metodo per cancellare una tecnologia
+    @Path("/{id}")
+    public Response deleteTechnology(@PathParam("id") Long id) {
+        try {
+            technologyService.delete(id);
+            return Response.ok().entity("Technology deleted successfully").type(MediaType.TEXT_PLAIN).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+
+    }
+
+    @POST //metodo per associare un employee a una tecnologia
+    @Path("/{technologyId}/employee/{employeeId}")
+    public Response addEmployeeToTechnology(
+            @PathParam("technologyId") Long technologyId,
+            @PathParam("employeeId") Long employeeId
+    ) {
+        try {
+
+            technologyService.addEmployeeToTechnology(technologyId, employeeId);
+            return Response.ok().entity("Employee successfully added to the technology.").type(MediaType.TEXT_PLAIN).build();
+
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+
+        } catch (EntityExistsException e) {
+            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+        } catch (IllegalArgumentException e) {
+
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+        }
+    }
+
+
+    @GET
+    @RolesAllowed({"admin","project manager"}) //puo essere utilizzato sia da admin che da project manager
+    @Path("/most-requested")
+    public Response getMostCommonTechnology() {
+        try {
+
+            Map<String, Set<Project>> mostCommonTechnology = technologyService.findMostTechnology();
+
+            return Response.ok(mostCommonTechnology).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NO_CONTENT).type(MediaType.TEXT_PLAIN).entity("No technology found").build();
+        }
+    }
+
+}
+
