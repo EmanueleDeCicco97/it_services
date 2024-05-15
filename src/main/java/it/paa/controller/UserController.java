@@ -92,5 +92,4 @@ public class UserController {
         userService.removeRoleFromUser(userId, roleId);
         return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the role was successfully revoked").build();
     }
- //lalalala
 }
