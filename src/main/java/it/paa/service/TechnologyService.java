@@ -1,11 +1,9 @@
 package it.paa.service;
 
-import it.paa.dto.ProjectDto;
 import it.paa.model.Client;
 import it.paa.model.Employee;
 import it.paa.model.Project;
 import jakarta.enterprise.context.ApplicationScoped;
-import it.paa.dto.TechnologyDto;
 import it.paa.model.Technology;
 import it.paa.repository.TechnologyRepository;
 import jakarta.inject.Inject;
@@ -28,8 +26,6 @@ public class TechnologyService implements TechnologyRepository {
     @Inject
     ClientService clientService;
 
-    @Inject
-    ProjectService projectService;
 
     @Override  //metodo per recuperare le tecnologie in base all'id
     public Technology findById(Long id) throws NotFoundException {
@@ -52,9 +48,7 @@ public class TechnologyService implements TechnologyRepository {
     @Transactional
     @Override //metodo per aggiornare una tecnologia
     public Technology update(Technology technology) throws NotFoundException, IllegalArgumentException {
-
         entityManager.merge(technology);
-
         return technology;
     }
 
@@ -62,7 +56,6 @@ public class TechnologyService implements TechnologyRepository {
     @Override //metodo per cancellare una tecnologia
     public void delete(Long id) throws NotFoundException {
         Technology technologyToDelete = findById(id);
-        technologyToDelete.getEmployees().forEach(employee -> employee.getTechnologies().remove(technologyToDelete));
         entityManager.remove(technologyToDelete);
     }
 
@@ -103,33 +96,6 @@ public class TechnologyService implements TechnologyRepository {
             System.out.println("Employee successfully added to the technology.");
         }
     }
-
-    //Validazioni avanzate (facoltative)  (continuo validazione)
-    //Dipendente: Assicurarsi che il ruolo sia congruo rispetto all'esperienza del dipendente.
-
-    @Override // Confronto tra role employee e experience technology
-    public boolean isEmployeeExperienceyValid(String experienceLevel, String role) {
-        switch (experienceLevel.toLowerCase()) {
-            case "senior":
-
-                return role.equalsIgnoreCase("senior");
-            case "junior":
-
-                return true;
-            case "middle":
-
-                return role.equalsIgnoreCase("middle") || role.equalsIgnoreCase("senior");
-
-            case "project manager":
-
-                return role.equalsIgnoreCase("middle") || role.equalsIgnoreCase("senior") || role.equalsIgnoreCase("project manager");
-
-            default:
-
-                return false;
-        }
-    }
-
 
     //•	Esercitazione 2: Creare un endpoint per trovare le tecnologie più richieste dai clienti e visualizzare i dettagli
     // dei progetti in cui sono utilizzate queste tecnologie.
@@ -182,5 +148,30 @@ public class TechnologyService implements TechnologyRepository {
         technologyProjectMap.put(mostCommonTechnology.orElse(null).getName(), projectsPopularTechnology);
 
         return technologyProjectMap;
+    }
+
+    //Validazioni avanzate (facoltative)  (continuo validazione)
+    //Dipendente: Assicurarsi che il ruolo sia congruo rispetto all'esperienza del dipendente.
+    @Override // Confronto tra role employee e experience technology
+    public boolean isEmployeeExperienceyValid(String experienceLevel, String role) {
+        switch (experienceLevel.toLowerCase()) {
+            case "senior":
+
+                return role.equalsIgnoreCase("senior");
+            case "junior":
+
+                return true;
+            case "middle":
+
+                return role.equalsIgnoreCase("middle") || role.equalsIgnoreCase("senior");
+
+            case "project manager":
+
+                return role.equalsIgnoreCase("middle") || role.equalsIgnoreCase("senior") || role.equalsIgnoreCase("project manager");
+
+            default:
+
+                return false;
+        }
     }
 }

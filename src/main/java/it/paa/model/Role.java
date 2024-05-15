@@ -13,7 +13,7 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty(access =JsonProperty.Access.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @NotBlank(message = "Role name cannot be blank")
@@ -22,13 +22,13 @@ public class Role {
 
     @OneToMany(mappedBy = "role")
     @JsonBackReference
-    @JsonProperty(access =JsonProperty.Access.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<User> users;
 
     public Role() {
     }
 
-    public  String getName() {
+    public String getName() {
         return name;
     }
 

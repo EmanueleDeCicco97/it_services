@@ -1,6 +1,5 @@
 package it.paa.repository;
 
-import it.paa.dto.TechnologyDto;
 import it.paa.model.Project;
 import it.paa.model.Technology;
 

@@ -1,5 +1,6 @@
 package it.paa.controller;
 
+import io.quarkus.arc.ArcUndeclaredThrowableException;
 import it.paa.model.User;
 import it.paa.service.UserService;
 import jakarta.annotation.security.PermitAll;
@@ -11,7 +12,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 
-import javax.print.attribute.standard.Media;
 import java.util.List;
 
 @Produces(MediaType.APPLICATION_JSON)
@@ -49,15 +49,24 @@ public class UserController {
 
     @GET
     @Path("/{id}")
-    public User getUserById(@PathParam("id") Long id) {
-        return userService.getUserById(id);
+    public Response getUserById(@PathParam("id") Long id) {
+        try {
+            User user = userService.getUserById(id);
+            return Response.ok().entity(user).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
     }
+
 
     @POST
     public Response createUser(User user, @QueryParam("roleId") Long roleId) {
         try {
             userService.createUser(user, roleId);
-            return Response.status(Response.Status.CREATED).entity("the user was created successfully").build();
+            return Response.status(Response.Status.CREATED).type(MediaType.TEXT_PLAIN).entity("the user was created successfully").build();
         } catch (PersistenceException e) {
             return Response.status(Response.Status.CONFLICT).type(MediaType.TEXT_PLAIN).entity(e.getMessage()).build();
         }
@@ -66,30 +75,62 @@ public class UserController {
     @PUT
     @Path("/{id}")
     public Response updateUser(@PathParam("id") Long id, User user) {
+        try {
+            userService.updateUser(user, id);
+            return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the user has been changed correctly").build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        } catch (ArcUndeclaredThrowableException e) {
+            return Response.status(Response.Status.CONFLICT).entity("a user with the same username already exists").type(MediaType.TEXT_PLAIN).build();
+        }
 
-        userService.updateUser(user, id);
-        return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("\n" + "the user has been changed correctly").build();
     }
 
     @DELETE
     @Path("/{id}")
     public Response deleteUser(@PathParam("id") Long id) {
-        userService.deleteUser(id);
-        return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the user was successfully deleted").build();
-    }
+        try {
+            userService.deleteUser(id);
+            return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the user was successfully deleted").build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        } catch (ArcUndeclaredThrowableException e) {
+            return Response.status(Response.Status.CONFLICT).entity("delete associations before deleting user").type(MediaType.TEXT_PLAIN).build();
+        }
 
+    }
 
     @PUT
     @Path("/{userId}/roles/{roleId}")
     public Response assignRoleToUser(@PathParam("userId") Long userId, @PathParam("roleId") Long roleId) {
-        userService.assignRoleToUser(userId, roleId);
-        return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the role was changed successfully").build();
+        try {
+            userService.assignRoleToUser(userId, roleId);
+            return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the role was changed successfully").build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
     }
 
     @DELETE
     @Path("/{userId}/roles/{roleId}")
     public Response removeRoleFromUser(@PathParam("userId") Long userId, @PathParam("roleId") Long roleId) {
-        userService.removeRoleFromUser(userId, roleId);
-        return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the role was successfully revoked").build();
+        try {
+            userService.removeRoleFromUser(userId, roleId);
+            return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the role was successfully revoked").build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
     }
 }

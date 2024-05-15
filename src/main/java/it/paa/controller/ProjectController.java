@@ -33,10 +33,10 @@ import java.util.stream.Collectors;
 public class ProjectController {
 
     @Inject
-    private ProjectService projectService;
+    ProjectService projectService;
 
     @Inject
-    private Validator validator;
+    Validator validator;
 
     @Inject
     UserService userService;
@@ -51,7 +51,6 @@ public class ProjectController {
 
         LocalDate startDate = null;
         try {
-
 
             if (startDateStr != null) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -102,12 +101,25 @@ public class ProjectController {
         }
     }
 
+    //•	API pubblica di visualizzazione dei progetti con dettaglio delle tecnologie
+    @GET
+    @PermitAll
+    @Path("withTechnologies")
+    public Response getProjectsWithTechnologies() {
+
+        Map<Project, Set<Technology>> map = projectService.getProjectsWithTechnologies();
+
+        if (map.isEmpty()) {
+            return Response.noContent().type(MediaType.TEXT_PLAIN).entity("no projects found").build();
+        }
+        return Response.ok(map).build();
+    }
+
     @POST //metodo per aggiungere un progetto
     public Response addProject(@QueryParam("userId") Long userId, ProjectDto projectDto) {
         try {
             // validazione dell'entità Project
             Set<ConstraintViolation<ProjectDto>> violations = validator.validate(projectDto);
-
             if (!violations.isEmpty()) {
                 // gestione degli errori di validazione
                 String errorMessage = violations.stream()
@@ -139,7 +151,6 @@ public class ProjectController {
     @Path("/{id}")
     public Response updateProject(@PathParam("id") Long id, ProjectDto projectDto) {
         try {
-
             // Ottenere l'utente corrente dal SecurityContext
             String currentUsername = securityContext.getUserPrincipal().getName();
 
@@ -154,7 +165,6 @@ public class ProjectController {
 
             // validazione dell'entità Project
             Set<ConstraintViolation<ProjectDto>> violations = validator.validate(projectDto);
-
             if (!violations.isEmpty()) {
                 // gestione degli errori di validazione
                 String errorMessage = violations.stream()
@@ -182,7 +192,6 @@ public class ProjectController {
         try {
             // Ottenere l'utente corrente dal SecurityContext
             String currentUsername = securityContext.getUserPrincipal().getName();
-
             // Verificare se l'utente corrente è il project manager del progetto o l'admin
             Project project = projectService.findById(id);
             if (!project.getUser().getUsername().equals(currentUsername) && securityContext.isUserInRole("project manager")) {
@@ -198,6 +207,11 @@ public class ProjectController {
                     .entity(e.getMessage())
                     .type(MediaType.TEXT_PLAIN)
                     .build();
+        } catch (ArcUndeclaredThrowableException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity("remove associations before removing a project")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
     }
 
@@ -210,7 +224,6 @@ public class ProjectController {
         try {
             // Ottenere l'utente corrente dal SecurityContext
             String currentUsername = securityContext.getUserPrincipal().getName();
-
             // Verificare se l'utente corrente è il project manager del progetto o l'admin
             Project project = projectService.findById(idProject);
             if (!project.getUser().getUsername().equals(currentUsername) && securityContext.isUserInRole("project manager")) {
@@ -232,18 +245,5 @@ public class ProjectController {
         } catch (EntityExistsException e) {
             return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
         }
-    }
-
-    @GET
-    @PermitAll
-    @Path("withTechnologies")
-    public Response getProjectsWithTechnologies() {
-
-        Map<Project, Set<Technology>> map = projectService.getProjectsWithTechnologies();
-
-        if (map.isEmpty()) {
-            return Response.noContent().type(MediaType.TEXT_PLAIN).entity("no projects found").build();
-        }
-        return Response.ok(map).build();
     }
 }

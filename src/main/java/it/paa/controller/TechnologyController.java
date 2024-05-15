@@ -1,10 +1,10 @@
 package it.paa.controller;
 
 
+import io.quarkus.arc.ArcUndeclaredThrowableException;
 import it.paa.dto.TechnologyDto;
 import it.paa.model.Project;
 import it.paa.model.Technology;
-import it.paa.service.EmployeeService;
 import it.paa.service.TechnologyService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -26,11 +26,10 @@ import java.util.stream.Collectors;
 @Path("/technology")
 public class TechnologyController {
     @Inject
-    private TechnologyService technologyService;
+    TechnologyService technologyService;
     @Inject
-    private Validator validator;
-    @Inject
-    EmployeeService employeeService;
+    Validator validator;
+
 
     @GET //metodo per recuperare tutte le tecnologie in base ai criteri forniti
     public Response getAllTechnologies(@QueryParam("name") String name,
@@ -134,9 +133,12 @@ public class TechnologyController {
                     .entity(e.getMessage())
                     .type(MediaType.TEXT_PLAIN)
                     .build();
+        } catch (ArcUndeclaredThrowableException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity("remove associations before removing a technology")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
-
-
     }
 
     @POST //metodo per associare un employee a una tecnologia
@@ -161,10 +163,12 @@ public class TechnologyController {
         }
     }
 
-
+    //•	Esercitazione 2: Creare un endpoint per trovare le tecnologie più richieste dai clienti e visualizzare i dettagli
+    // dei progetti in cui sono utilizzate queste tecnologie.
     @GET
-    @RolesAllowed({"admin","project manager"}) //puo essere utilizzato sia da admin che da project manager
-    @Path("/most-requested")
+    @RolesAllowed({"admin", "project manager"})
+    // ritengo opportuno come autorizzazione avanzata che sia l'admin che il pm
+    @Path("/most-requested")                  // possono vedere dove l'andamento delle varie tecnologie
     public Response getMostCommonTechnology() {
         try {
 

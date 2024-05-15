@@ -72,8 +72,6 @@ public class ProjectService implements ProjectRepository {
     @Override
     public void delete(Long id) throws NotFoundException {
         Project projectToDelete = findById(id);
-        projectToDelete.getEmployees().forEach(employee -> employee.getProjects().remove(projectToDelete));
-
         entityManager.remove(projectToDelete);
     }
 
@@ -115,6 +113,7 @@ public class ProjectService implements ProjectRepository {
         }
     }
 
+    //•	API pubblica di visualizzazione dei progetti con dettaglio delle tecnologie
     public Map<Project, Set<Technology>> getProjectsWithTechnologies() {
 
         Map<Project, Set<Technology>> map = new HashMap<>();

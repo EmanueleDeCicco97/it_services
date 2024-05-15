@@ -27,8 +27,7 @@ public class EmployeeController {
     @Inject
     Validator validator;
 
-    //•	Esercitazione 1: Realizzare una funzionalità per ottenere tutti i progetti in cui è coinvolto
-    // un dipendente specifico e visualizzare i dettagli dei progetti e dei clienti coinvolti
+
     @GET //metodo per recuperare tutti gli employee con i parametri di ricerca
     public Response getAllEmployees(@QueryParam("name") String name,
                                     @QueryParam("surname") String surname) {
@@ -39,11 +38,12 @@ public class EmployeeController {
         return Response.ok(employees).build();
     }
 
-
-    // nella get by id c'è la funzionalità di recuperare anche project e client per l'esercitazione avanzata esercizio 1
+    //•	Esercitazione 1: Realizzare una funzionalità per ottenere tutti i progetti in cui è coinvolto
+    // un dipendente specifico e visualizzare i dettagli dei progetti e dei clienti coinvolti
     @GET
-    @RolesAllowed({"admin", "project manager"}) //puo essere utilizzato sia da admin che da project manager
-    @Path("/{id}")
+    @RolesAllowed({"admin", "project manager"})
+    //ritengo opportuno come autorizzazione avanzata che sia l'admin che il pm
+    @Path("/{id}")                                   // possono vedere dove è coinvolto un dipendente
     public Response getEmployeeById(@PathParam("id") Long id) {
         try {
             Employee employee = employeeService.findById(id);
@@ -62,7 +62,6 @@ public class EmployeeController {
 
         // Validazione dell'entità Project
         Set<ConstraintViolation<EmployeeDto>> violations = validator.validate(employeeDto);
-
         if (!violations.isEmpty()) {
             // Gestione degli errori di validazione
             String errorMessage = violations.stream()
@@ -70,7 +69,6 @@ public class EmployeeController {
                     .collect(Collectors.joining("\n"));
 
             return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
-
         }
 
         Employee employee = new Employee();
@@ -92,7 +90,6 @@ public class EmployeeController {
         try {
             // Validazione dell'entità Project
             Set<ConstraintViolation<EmployeeDto>> violations = validator.validate(employeeDto);
-
             if (!violations.isEmpty()) {
                 // Gestione degli errori di validazione
                 String errorMessage = violations.stream()

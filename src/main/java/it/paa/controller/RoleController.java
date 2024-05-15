@@ -2,14 +2,10 @@ package it.paa.controller;
 
 import io.quarkus.arc.ArcUndeclaredThrowableException;
 import it.paa.model.Role;
-import it.paa.model.User;
 import it.paa.service.RoleService;
-import it.paa.service.UserService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
-import jakarta.validation.Constraint;
-import jakarta.validation.ConstraintDeclarationException;
-import jakarta.validation.ConstraintViolationException;
+import jakarta.persistence.PersistenceException;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -25,8 +21,6 @@ public class RoleController {
 
     @Inject
     RoleService roleService;
-    @Inject
-    UserService userService;
 
     @GET
     public Response getAllRoles() {
@@ -37,28 +31,41 @@ public class RoleController {
     @GET
     @Path("/{id}")
     public Response getRoleById(@PathParam("id") Long id) {
-        Role role = roleService.getRoleById(id);
-        if (role != null) {
+        try {
+            Role role = roleService.getRoleById(id);
             return Response.ok(role).build();
-        } else {
-            return Response.status(Response.Status.NO_CONTENT).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
     }
 
+
     @POST
     public Response createRole(@Valid Role role) {
-        Role createdRole = roleService.createRole(role);
-        return Response.status(Response.Status.CREATED).entity(createdRole).build();
+        try {
+            Role createdRole = roleService.createRole(role);
+            return Response.status(Response.Status.CREATED).entity(createdRole).build();
+        } catch (PersistenceException e) {
+            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+        }
+
     }
 
     @PUT
     @Path("/{id}")
     public Response updateRole(@PathParam("id") Long id, @Valid Role roleDetails) {
-        Role updatedRole = roleService.updateRole(id, roleDetails);
-        if (updatedRole != null) {
+        try {
+
+            Role updatedRole = roleService.updateRole(id, roleDetails);
             return Response.ok(updatedRole).build();
-        } else {
+
+        } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (ArcUndeclaredThrowableException e) {
+            return Response.status(Response.Status.CONFLICT).entity("A role with the name entered already exists").type(MediaType.TEXT_PLAIN).build();
         }
     }
 
@@ -66,14 +73,16 @@ public class RoleController {
     @Path("/{id}")
     public Response deleteRole(@PathParam("id") Long id) {
         try {
-            boolean deleted = roleService.deleteRole(id);
-            if (deleted) {
-                return Response.ok().build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
+            roleService.deleteRole(id);
+            return Response.ok().build();
+
         } catch (ArcUndeclaredThrowableException e) {
             return Response.status(Response.Status.CONFLICT).entity("remove associated users before deleting the role").type(MediaType.TEXT_PLAIN).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
     }
 }

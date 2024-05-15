@@ -2,8 +2,6 @@ package it.paa.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import it.paa.validation.DateCheckDto;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;

@@ -14,7 +14,6 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UserService implements UserRepository {
@@ -27,17 +26,11 @@ public class UserService implements UserRepository {
 
 
     public User authenticateUser(String username, String password) {
-        try {
-            User user = getUserByUsername(username);
-
-            if (BcryptUtil.matches(password, user.getPassword())) {
-                System.out.println(user);
-                return user;
-            } else {
-                return null;
-            }
-        } catch (NoResultException e) {
-            return null;
+        User user = getUserByUsername(username);
+        if (BcryptUtil.matches(password, user.getPassword())) {
+            return user;
+        } else {
+            throw new NotFoundException("Invalid password.");
         }
     }
 
@@ -47,7 +40,7 @@ public class UserService implements UserRepository {
                     .setParameter("username", username)
                     .getSingleResult();
         } catch (NoResultException e) {
-            throw new NotFoundException("\n" + "Incorrect username or password ");
+            throw new NotFoundException("Invalid username");
         }
     }
 
@@ -80,9 +73,9 @@ public class UserService implements UserRepository {
 
     @Transactional
     public void updateUser(User user, Long id) {
-        User userCheck = entityManager.find(User.class, id);
-
+        User userCheck = getUserById(id);
         String encryptedPassword = BcryptUtil.bcryptHash(user.getPassword());
+        userCheck.setUsername(user.getUsername());
         userCheck.setPassword(encryptedPassword);
 
         entityManager.merge(userCheck);
@@ -90,7 +83,7 @@ public class UserService implements UserRepository {
 
     @Transactional
     public void deleteUser(Long id) {
-        User user = entityManager.find(User.class, id);
+        User user = getUserById(id);
         if (user != null) {
             entityManager.remove(user);
         }
@@ -99,12 +92,12 @@ public class UserService implements UserRepository {
     @Transactional
     public void assignRoleToUser(Long userId, Long roleId) {
         User user = getUserById(userId);
-        if (user == null) {
-            throw new IllegalArgumentException("User with id " + userId + " does not exist");
-        }
         Role role = roleService.getRoleById(roleId);
         if (role == null) {
-            throw new IllegalArgumentException("Role with id " + roleId + " does not exist");
+            throw new NotFoundException("Role with id " + roleId + " does not exist");
+        }
+        if (user == null) {
+            throw new NotFoundException("User with id " + userId + " does not exist");
         }
         user.setRole(role);
         updateUser(user, user.getId());
@@ -112,13 +105,14 @@ public class UserService implements UserRepository {
 
     @Transactional
     public void removeRoleFromUser(Long userId, Long roleId) {
-        User user = getUserById(userId);
-        if (user == null) {
-            throw new IllegalArgumentException("User with id " + userId + " does not exist");
-        }
+
         Role role = roleService.getRoleById(roleId);
         if (role == null) {
-            throw new IllegalArgumentException("Role with id " + roleId + " does not exist");
+            throw new NotFoundException("Role with id " + roleId + " does not exist");
+        }
+        User user = getUserById(userId);
+        if (user == null) {
+            throw new NotFoundException("User with id " + userId + " does not exist");
         }
         if (user.getRole() != null && user.getRole().getId().equals(roleId)) {
             user.setRole(null);
