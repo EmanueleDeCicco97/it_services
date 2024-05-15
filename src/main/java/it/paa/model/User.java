@@ -32,7 +32,7 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Role role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user")
     @JsonBackReference
     @JsonIgnore
     private List<Project> projects;

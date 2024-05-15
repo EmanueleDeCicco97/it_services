@@ -1,5 +1,6 @@
 package it.paa.controller;
 
+import io.quarkus.arc.ArcUndeclaredThrowableException;
 import it.paa.dto.ProjectDto;
 import it.paa.model.Project;
 import it.paa.model.Technology;

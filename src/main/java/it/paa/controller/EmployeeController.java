@@ -1,5 +1,6 @@
 package it.paa.controller;
 
+import io.quarkus.arc.ArcUndeclaredThrowableException;
 import it.paa.dto.EmployeeDto;
 import it.paa.model.Employee;
 import it.paa.service.EmployeeService;
@@ -123,6 +124,11 @@ public class EmployeeController {
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }catch (ArcUndeclaredThrowableException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity("remove associations before removing an employee")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }

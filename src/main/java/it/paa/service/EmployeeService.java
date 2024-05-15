@@ -1,5 +1,6 @@
 package it.paa.service;
 
+import io.quarkus.arc.ArcUndeclaredThrowableException;
 import it.paa.dto.EmployeeDto;
 import it.paa.model.Employee;
 import it.paa.repository.EmployeeRepository;
@@ -8,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import net.bytebuddy.implementation.bytecode.Throw;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -99,13 +101,9 @@ public class EmployeeService implements EmployeeRepository {
     @Transactional
     @Override //metodo per eliminare un employee
     public void delete(Long id) throws NotFoundException {
-        // Trova l'employee con l'ID specificato
-        Employee employeeToDelete = findById(id);
-        // Rimuovo l'employee dalla relazione con i progetti e le tecnologie'
-        employeeToDelete.getProjects().remove(employeeToDelete);
-        employeeToDelete.getTechnologies().remove(employeeToDelete);
-        employeeToDelete.getClients().forEach(client -> client.setContactPerson(null));
 
-        em.remove(employeeToDelete);
+            Employee employeeToDelete = findById(id);
+            em.remove(employeeToDelete);
+
     }
 }
