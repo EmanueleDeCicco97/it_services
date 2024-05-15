@@ -43,7 +43,7 @@ public class ProjectController {
     @Inject
     SecurityContext securityContext;
 
-    @RolesAllowed({"admin","project manager"})
+    @RolesAllowed({"admin", "project manager"})
     @GET //metodo per recuperare tutti i progetti in base al nome e alla data di inizio
     public Response getAllProjects(@QueryParam("name") String name,
                                    @QueryParam("startDate") String startDateStr) {
@@ -68,8 +68,8 @@ public class ProjectController {
         List<Project> projects = projectService.findAllByAttributes(name, startDate);
 
 
-        if (securityContext.isUserInRole("project manager")){
-         projects = projects.stream().filter(project -> project.getUser().getUsername().equals(securityContext.getUserPrincipal().getName())).toList();
+        if (securityContext.isUserInRole("project manager")) {
+            projects = projects.stream().filter(project -> project.getUser().getUsername().equals(securityContext.getUserPrincipal().getName())).toList();
         }
 
         if (projects.isEmpty()) {
@@ -78,7 +78,7 @@ public class ProjectController {
         return Response.ok(projects).build();
     }
 
-    @RolesAllowed({"admin","project manager"})
+    @RolesAllowed({"admin", "project manager"})
     @GET //metodo per recuperare tutti i progetti in base all'id
     @Path("/{id}")
     public Response getProjectById(@PathParam("id") Long id) {
@@ -124,7 +124,7 @@ public class ProjectController {
         }
     }
 
-    @RolesAllowed({"admin","project manager"})
+    @RolesAllowed({"admin", "project manager"})
     @PUT //metodo per aggiornare un progetto
     @Path("/{id}")
     public Response updateProject(@PathParam("id") Long id, ProjectDto projectDto) {
@@ -165,7 +165,7 @@ public class ProjectController {
         }
     }
 
-    @RolesAllowed({"admin","project manager"})
+    @RolesAllowed({"admin", "project manager"})
     @DELETE //metodo per cancellare un progetto
     @Path("/{id}")
     public Response deleteProject(@PathParam("id") Long id) {
@@ -180,7 +180,7 @@ public class ProjectController {
                         .entity("You are not authorized to update this project")
                         .type(MediaType.TEXT_PLAIN)
                         .build();
-           }
+            }
             projectService.delete(id);
             return Response.ok().entity("Project successfully deleted").type(MediaType.TEXT_PLAIN).build();
         } catch (NotFoundException e) {
@@ -191,7 +191,7 @@ public class ProjectController {
         }
     }
 
-    @RolesAllowed({"admin","project manager"})
+    @RolesAllowed({"admin", "project manager"})
     @POST    //Aggiungo un dipendente ad un progetto
     @Path("{idProject}/employee/{idEmployee}")
     public Response addEmployeeToProject(@PathParam("idProject") Long idProject,
