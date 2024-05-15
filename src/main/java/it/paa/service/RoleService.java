@@ -43,7 +43,7 @@ public class RoleService {
 
     @Transactional
     public boolean deleteRole(Long id) {
-        Role role = entityManager.find(Role.class, id);
+        Role role = getRoleById(id);
         if (role != null) {
             entityManager.remove(role);
             return true;

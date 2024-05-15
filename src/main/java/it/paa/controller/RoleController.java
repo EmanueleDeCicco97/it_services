@@ -1,9 +1,15 @@
 package it.paa.controller;
 
+import io.quarkus.arc.ArcUndeclaredThrowableException;
 import it.paa.model.Role;
+import it.paa.model.User;
 import it.paa.service.RoleService;
+import it.paa.service.UserService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.validation.Constraint;
+import jakarta.validation.ConstraintDeclarationException;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -19,6 +25,8 @@ public class RoleController {
 
     @Inject
     RoleService roleService;
+    @Inject
+    UserService userService;
 
     @GET
     public Response getAllRoles() {
@@ -33,7 +41,7 @@ public class RoleController {
         if (role != null) {
             return Response.ok(role).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
 
@@ -57,11 +65,15 @@ public class RoleController {
     @DELETE
     @Path("/{id}")
     public Response deleteRole(@PathParam("id") Long id) {
-        boolean deleted = roleService.deleteRole(id);
-        if (deleted) {
-            return Response.ok().build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        try {
+            boolean deleted = roleService.deleteRole(id);
+            if (deleted) {
+                return Response.ok().build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (ArcUndeclaredThrowableException e) {
+            return Response.status(Response.Status.CONFLICT).entity("remove associated users before deleting the role").type(MediaType.TEXT_PLAIN).build();
         }
     }
 }

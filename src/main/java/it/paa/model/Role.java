@@ -20,7 +20,7 @@ public class Role {
     @Column(name = "name", unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "role")
     @JsonBackReference
     @JsonProperty(access =JsonProperty.Access.READ_ONLY)
     private List<User> users;

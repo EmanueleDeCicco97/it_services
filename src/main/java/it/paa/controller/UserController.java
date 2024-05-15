@@ -11,6 +11,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 
+import javax.print.attribute.standard.Media;
 import java.util.List;
 
 @Produces(MediaType.APPLICATION_JSON)
@@ -67,14 +68,14 @@ public class UserController {
     public Response updateUser(@PathParam("id") Long id, User user) {
 
         userService.updateUser(user, id);
-        return Response.status(Response.Status.OK).entity("\n" + "the user has been changed correctly").build();
+        return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("\n" + "the user has been changed correctly").build();
     }
 
     @DELETE
     @Path("/{id}")
     public Response deleteUser(@PathParam("id") Long id) {
         userService.deleteUser(id);
-        return Response.status(Response.Status.OK).entity("the user was successfully deleted").build();
+        return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the user was successfully deleted").build();
     }
 
 
@@ -82,14 +83,14 @@ public class UserController {
     @Path("/{userId}/roles/{roleId}")
     public Response assignRoleToUser(@PathParam("userId") Long userId, @PathParam("roleId") Long roleId) {
         userService.assignRoleToUser(userId, roleId);
-        return Response.status(Response.Status.OK).entity("the role was changed successfully").build();
+        return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the role was changed successfully").build();
     }
 
     @DELETE
     @Path("/{userId}/roles/{roleId}")
     public Response removeRoleFromUser(@PathParam("userId") Long userId, @PathParam("roleId") Long roleId) {
         userService.removeRoleFromUser(userId, roleId);
-        return Response.status(Response.Status.OK).entity("the role was successfully revoked").build();
+        return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the role was successfully revoked").build();
     }
 
 }

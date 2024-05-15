@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UserService implements UserRepository {
@@ -64,14 +65,14 @@ public class UserService implements UserRepository {
 
     @Transactional
     public void createUser(User user, Long idRole) {
-        try{
+        try {
             Role role = roleService.getRoleById(idRole);
             String encryptedPassword = BcryptUtil.bcryptHash(user.getPassword());
             user.setRole(role);
             user.setPassword(encryptedPassword);
             entityManager.persist(user);
-        }catch
-            (PersistenceException e){
+        } catch
+        (PersistenceException e) {
             throw new PersistenceException("User already exists");
         }
 
@@ -124,5 +125,4 @@ public class UserService implements UserRepository {
             updateUser(user, user.getId());
         }
     }
-
 }
