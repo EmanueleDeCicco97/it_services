@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 public class EmployeeController {
 
     @Inject
-     EmployeeService employeeService;
+    EmployeeService employeeService;
     @Inject
-     Validator validator;
+    Validator validator;
 
     //•	Esercitazione 1: Realizzare una funzionalità per ottenere tutti i progetti in cui è coinvolto
     // un dipendente specifico e visualizzare i dettagli dei progetti e dei clienti coinvolti
@@ -42,7 +42,7 @@ public class EmployeeController {
 
     // nella get by id c'è la funzionalità di recuperare anche project e client per l'esercitazione avanzata esercizio 1
     @GET
-    @RolesAllowed({"admin","project manager"}) //puo essere utilizzato sia da admin che da project manager
+    @RolesAllowed({"admin", "project manager"}) //puo essere utilizzato sia da admin che da project manager
     @Path("/{id}")
     public Response getEmployeeById(@PathParam("id") Long id) {
         try {
@@ -126,11 +126,12 @@ public class EmployeeController {
                     .entity(e.getMessage())
                     .type(MediaType.TEXT_PLAIN)
                     .build();
-        }catch (ArcUndeclaredThrowableException e) {
+        } catch (ArcUndeclaredThrowableException e) {
             return Response.status(Response.Status.CONFLICT)
                     .entity("remove associations before removing an employee")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
     }
+
 }
