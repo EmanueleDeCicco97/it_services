@@ -56,7 +56,7 @@ public class UserController {
     public Response createUser(User user, @QueryParam("roleId") Long roleId) {
         try {
             userService.createUser(user, roleId);
-            return Response.status(Response.Status.CREATED).build();
+            return Response.status(Response.Status.CREATED).entity("the user was created successfully").build();
         } catch (PersistenceException e) {
             return Response.status(Response.Status.CONFLICT).type(MediaType.TEXT_PLAIN).entity(e.getMessage()).build();
         }
@@ -67,14 +67,14 @@ public class UserController {
     public Response updateUser(@PathParam("id") Long id, User user) {
 
         userService.updateUser(user, id);
-        return Response.status(Response.Status.OK).build();
+        return Response.status(Response.Status.OK).entity("\n" + "the user has been changed correctly").build();
     }
 
     @DELETE
     @Path("/{id}")
     public Response deleteUser(@PathParam("id") Long id) {
         userService.deleteUser(id);
-        return Response.status(Response.Status.OK).build();
+        return Response.status(Response.Status.OK).entity("the user was successfully deleted").build();
     }
 
 
@@ -82,14 +82,14 @@ public class UserController {
     @Path("/{userId}/roles/{roleId}")
     public Response assignRoleToUser(@PathParam("userId") Long userId, @PathParam("roleId") Long roleId) {
         userService.assignRoleToUser(userId, roleId);
-        return Response.status(Response.Status.OK).build();
+        return Response.status(Response.Status.OK).entity("the role was changed successfully").build();
     }
 
     @DELETE
     @Path("/{userId}/roles/{roleId}")
     public Response removeRoleFromUser(@PathParam("userId") Long userId, @PathParam("roleId") Long roleId) {
         userService.removeRoleFromUser(userId, roleId);
-        return Response.status(Response.Status.OK).build();
+        return Response.status(Response.Status.OK).entity("the role was successfully revoked").build();
     }
 
 }
