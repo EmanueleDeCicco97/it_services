@@ -84,6 +84,14 @@ public class ProjectController {
     public Response getProjectById(@PathParam("id") Long id) {
         try {
             Project project = projectService.findById(id);
+            String currentUsername = securityContext.getUserPrincipal().getName();
+            if (!project.getUser().getUsername().equals(currentUsername) && securityContext.isUserInRole("project manager")) {
+                return Response.status(Response.Status.FORBIDDEN)
+                        .entity("You are not authorized to update this project")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build();
+            }
+
             return Response.ok(project).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
@@ -107,6 +115,7 @@ public class ProjectController {
 
                 return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN).entity(errorMessage).build();
             }
+
             User user = userService.getUserById(userId);
             // creo un nuovo progetto con i dati del dto
             Project project = new Project();
