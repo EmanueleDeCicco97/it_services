@@ -214,36 +214,4 @@ public class ProjectController {
                     .build();
         }
     }
-
-    @RolesAllowed({"admin", "project manager"})
-    @POST    //Aggiungo un dipendente ad un progetto
-    @Path("{idProject}/employee/{idEmployee}")
-    public Response addEmployeeToProject(@PathParam("idProject") Long idProject,
-                                         @PathParam("idEmployee") Long idEmployee) {
-
-        try {
-            // Ottenere l'utente corrente dal SecurityContext
-            String currentUsername = securityContext.getUserPrincipal().getName();
-            // Verificare se l'utente corrente è il project manager del progetto o l'admin
-            Project project = projectService.findById(idProject);
-            if (!project.getUser().getUsername().equals(currentUsername) && securityContext.isUserInRole("project manager")) {
-                return Response.status(Response.Status.FORBIDDEN)
-                        .entity("You are not authorized to update this project")
-                        .type(MediaType.TEXT_PLAIN)
-                        .build();
-
-            }
-            projectService.addEmployeeToProject(idProject, idEmployee);
-
-            return Response.status(Response.Status.CREATED).entity("project correctly assigned to the employee").type(MediaType.TEXT_PLAIN).build();
-        } catch (NotFoundException e) {
-
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
-                    .build();
-        } catch (EntityExistsException e) {
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
-        }
-    }
 }

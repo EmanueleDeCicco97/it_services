@@ -89,29 +89,6 @@ public class ProjectService implements ProjectRepository {
                 .collect(Collectors.toList());
     }
 
-    // metodo per aggiungere un employee al project
-    @Transactional
-    @Override
-    public void addEmployeeToProject(Long projectId, Long employeeId) {
-
-        // recupero i dati dal database
-        Employee employee = employeeService.findById(employeeId);
-        Project project = findById(projectId);
-        // controllo se sono diversi da null
-        if (project != null && employee != null) {
-
-            // se già esiste un associazione mando l'errore
-            if (employee.getProjects().contains(project)) {
-                throw new EntityExistsException("This employee with this id already assign at this project");
-            }
-            // aggiungo il progetto all'elenco dei project di employee.
-            employee.addProject(project);
-
-            // aggiunge gli oggetti nella tabella di mezzo delle 2 classi
-            entityManager.merge(project);
-
-        }
-    }
 
     //•	API pubblica di visualizzazione dei progetti con dettaglio delle tecnologie
     public Map<Project, Set<Technology>> getProjectsWithTechnologies() {

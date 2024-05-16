@@ -18,7 +18,6 @@ public interface ProjectRepository {
 
     List<Project> findAllByAttributes(String name, LocalDate startDate);
 
-    void addEmployeeToProject(Long projectId, Long employeeId);
 }
 
 
