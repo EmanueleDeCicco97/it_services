@@ -125,7 +125,7 @@ public class EmployeeController {
                     .build();
         } catch (ArcUndeclaredThrowableException e) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity("remove associations before removing an employee")
+                    .entity("remove associations with clients before removing an employee")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }catch (IllegalStateException e) {

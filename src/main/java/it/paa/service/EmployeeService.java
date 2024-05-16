@@ -88,6 +88,8 @@ public class EmployeeService implements EmployeeRepository {
         Employee existingEmployee = findById(id);
 
         // Aggiorno le informazioni dell'employee esistente con quelle fornite nel parametro employeeDto
+        existingEmployee.setName(employeeDto.getName());
+        existingEmployee.setSurname(employeeDto.getSurname());
         existingEmployee.setHireDate(employeeDto.getHireDate());
         existingEmployee.setRole(employeeDto.getRole());
         existingEmployee.setSalary(employeeDto.getSalary());

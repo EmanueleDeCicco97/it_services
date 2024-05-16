@@ -59,32 +59,34 @@ public class ClientController {
     }
 
     @POST //metodo per creare un nuovo cliente
-
-    public Response addClient( ClientDto clientDto) {
+    public Response addClient(ClientDto clientDto) {
         try {
-                // Trova il dipendente corrispondente all'ID fornito
-                Employee employee = employeeService.findById(clientDto.getEmployeeId());
-            if (employee != null) {
-                // Assegna il dipendente al cliente
-                Client client = new Client();
-                client.setContactPerson(employee);
-                client.setName(clientDto.getName());
-                client.setSector(clientDto.getSector());
-                client.setAddress(clientDto.getAddress());
 
-                Set<ConstraintViolation<ClientDto>> violations = validator.validate(clientDto);
-                if (!violations.isEmpty()) {
-                    String errorMessage = violations.stream()
-                            .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
-                            .collect(Collectors.joining("\n"));
-                    return Response.status(Response.Status.BAD_REQUEST)
-                            .entity(errorMessage)
-                            .type(MediaType.TEXT_PLAIN)
-                            .build();
-                }
+            Client client = new Client();
 
-                clientService.save(client); // Salva il cliente dopo la validazione
+            Employee employee = null;
+
+            if (clientDto.getEmployeeId() != null) {
+                // Trova il dipendente corrispondente all'ID fornito e lo assegna al cliente
+                employee = employeeService.findById(clientDto.getEmployeeId());
             }
+            client.setName(clientDto.getName());
+            client.setSector(clientDto.getSector());
+            client.setAddress(clientDto.getAddress());
+
+            Set<ConstraintViolation<ClientDto>> violations = validator.validate(clientDto);
+            if (!violations.isEmpty()) {
+                String errorMessage = violations.stream()
+                        .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
+                        .collect(Collectors.joining("\n"));
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(errorMessage)
+                        .type(MediaType.TEXT_PLAIN)
+                        .build();
+            }
+
+            clientService.save(client); // Salva il cliente dopo la validazione
+
             return Response.status(Response.Status.CREATED)
                     .entity("Client created successfully")
                     .type(MediaType.TEXT_PLAIN)
