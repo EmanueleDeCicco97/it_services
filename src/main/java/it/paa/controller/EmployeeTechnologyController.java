@@ -22,8 +22,7 @@ public class EmployeeTechnologyController {
     @Path("/{technologyId}/employee/{employeeId}")
     public Response addEmployeeToTechnology(
             @PathParam("technologyId") Long technologyId,
-            @PathParam("employeeId") Long employeeId
-    ) {
+            @PathParam("employeeId") Long employeeId) {
         try {
 
             employeeTechnologyService.addEmployeeToTechnology(technologyId, employeeId);
@@ -39,4 +38,23 @@ public class EmployeeTechnologyController {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
         }
     }
+
+    @DELETE // Metodo per rimuovere un employee da una tecnologia
+    @Path("/{technologyId}/employee/{employeeId}")
+    public Response removeEmployeeFromTechnology(
+            @PathParam("technologyId") Long technologyId,
+            @PathParam("employeeId") Long employeeId
+    ) {
+        try {
+            employeeTechnologyService.removeEmployeeFromTechnology(technologyId, employeeId);
+            return Response.ok().entity("Employee successfully removed from the technology.").type(MediaType.TEXT_PLAIN).build();
+
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+        }
+    }
+
 }

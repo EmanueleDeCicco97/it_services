@@ -7,6 +7,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
@@ -46,5 +47,18 @@ public class EmployeeTechnologyService implements EmployeeTechnologyRepository {
 
             System.out.println("Employee successfully added to the technology.");
         }
+    }
+    @Override // metodo per disassociare un employee da una tecnologia
+    @Transactional
+    public void removeEmployeeFromTechnology(Long technologyId, Long employeeId) {
+        Employee employee = employeeService.findById(employeeId);
+        Technology technology = technologyService.findById(technologyId);
+
+        if (!technology.getEmployees().contains(employee)) {
+            throw new IllegalArgumentException("Employee with ID " + employeeId + " is not associated with technology ID " + technologyId + ".");
+        }
+
+        employee.getTechnologies().remove(technology);
+        entityManager.merge(technology);
     }
 }
