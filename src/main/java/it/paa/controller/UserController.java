@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
 
 import java.util.List;
 
@@ -23,8 +22,6 @@ public class UserController {
 
     @Inject
     UserService userService;
-    @Inject
-    SecurityContext securityContext;
 
     @POST
     @PermitAll
