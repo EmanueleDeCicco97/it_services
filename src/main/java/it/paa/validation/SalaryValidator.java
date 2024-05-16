@@ -41,7 +41,7 @@ public class SalaryValidator implements ConstraintValidator<ValidSalary, Employe
                 // Lo stipendio minimo per un middle è minimo 2000 o superiore
                 return salary >= 2000;
             case "project manager":
-                // Lo stipendio minimo per un project manager è minimo 2000 o superiore
+                // Lo stipendio minimo per un project manager è minimo 3000 o superiore
                 return salary >= 3000;
             default:
                 return false; // Ruolo non riconosciuto
