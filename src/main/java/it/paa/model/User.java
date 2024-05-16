@@ -19,7 +19,7 @@ public class User {
     private Long id;
 
     @NotBlank(message = "Username cannot be blank")
-    @Column(name = "username", unique = true)
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
     @NotBlank(message = "Password cannot be blank")
