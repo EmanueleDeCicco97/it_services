@@ -7,11 +7,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-
-import java.util.List;
 
 @ApplicationScoped
 public class EmployeeProjectService implements EmployeeProjectRepository {
