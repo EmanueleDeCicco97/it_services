@@ -22,7 +22,7 @@ public interface UserRepository {
 
     void assignRoleToUser(Long userId, Long roleId);
 
-    void removeRoleFromUser(Long userId, Long roleId);
+    void removeRoleFromUser(Long userId);
 
     User getUserByUsernameIgnoreCase(String username);
 }

@@ -101,20 +101,15 @@ public class UserService implements UserRepository {
     }
 
     @Transactional
-    public void removeRoleFromUser(Long userId, Long roleId) {
+    public void removeRoleFromUser(Long userId) {
 
-        Role role = roleService.getRoleById(roleId);
-        if (role == null) {
-            throw new NotFoundException("Role with id " + roleId + " does not exist");
-        }
         User user = getUserById(userId);
         if (user == null) {
             throw new NotFoundException("User with id " + userId + " does not exist");
         }
-        if (user.getRole() != null && user.getRole().getId().equals(roleId)) {
             user.setRole(null);
             updateUser(user, user.getId());
-        }
+
     }
 
     public User getUserByUsernameIgnoreCase(String username) {

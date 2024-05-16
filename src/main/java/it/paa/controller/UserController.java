@@ -118,7 +118,7 @@ public class UserController {
     }
 
     @PUT
-    @Path("/{userId}/roles/{roleId}")
+    @Path("/assignRole/{userId}/roles/{roleId}")
     public Response assignRoleToUser(@PathParam("userId") Long userId, @PathParam("roleId") Long roleId) {
         try {
             userService.assignRoleToUser(userId, roleId);
@@ -132,10 +132,10 @@ public class UserController {
     }
 
     @DELETE
-    @Path("/{userId}/roles/{roleId}")
-    public Response removeRoleFromUser(@PathParam("userId") Long userId, @PathParam("roleId") Long roleId) {
+    @Path("/revokeRole/{userId}")
+    public Response revokeRoleFromUser(@PathParam("userId") Long userId) {
         try {
-            userService.removeRoleFromUser(userId, roleId);
+            userService.removeRoleFromUser(userId);
             return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the role was successfully revoked").build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
