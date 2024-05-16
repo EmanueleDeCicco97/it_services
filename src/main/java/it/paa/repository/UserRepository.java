@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface UserRepository {
 
+    User authenticateUser(String username, String password);
+
     List<User> getAllUsers();
 
     User getUserById(Long id);
@@ -17,4 +19,8 @@ public interface UserRepository {
     void updateUser(User user, Long id);
 
     void deleteUser(Long id);
+
+    void assignRoleToUser(Long userId, Long roleId);
+
+    void removeRoleFromUser(Long userId, Long roleId);
 }

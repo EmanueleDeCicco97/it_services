@@ -48,6 +48,7 @@ public class EmployeeTechnologyService implements EmployeeTechnologyRepository {
             System.out.println("Employee successfully added to the technology.");
         }
     }
+
     @Override // metodo per disassociare un employee da una tecnologia
     @Transactional
     public void removeEmployeeFromTechnology(Long technologyId, Long employeeId) {

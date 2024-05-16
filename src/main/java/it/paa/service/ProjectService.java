@@ -86,6 +86,7 @@ public class ProjectService implements ProjectRepository {
 
 
     //•	API pubblica di visualizzazione dei progetti con dettaglio delle tecnologie
+    @Override
     public Map<Project, Set<Technology>> getProjectsWithTechnologies() {
 
         Map<Project, Set<Technology>> map = new HashMap<>();

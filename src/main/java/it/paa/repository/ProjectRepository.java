@@ -2,9 +2,12 @@ package it.paa.repository;
 
 import it.paa.dto.ProjectDto;
 import it.paa.model.Project;
+import it.paa.model.Technology;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public interface ProjectRepository {
 
@@ -17,6 +20,8 @@ public interface ProjectRepository {
     void delete(Long id);
 
     List<Project> findAllByAttributes(String name, LocalDate startDate);
+
+    Map<Project, Set<Technology>> getProjectsWithTechnologies();
 
 }
 

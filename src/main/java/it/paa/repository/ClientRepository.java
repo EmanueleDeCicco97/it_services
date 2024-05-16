@@ -15,4 +15,6 @@ public interface ClientRepository {
     void delete(Long id);
 
     List<Client> findAllByAttributes(String name, String sector);
+
+    List<Client> findAll();
 }

@@ -7,8 +7,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+
+import java.util.List;
 
 @ApplicationScoped
 public class EmployeeProjectService implements EmployeeProjectRepository {
@@ -42,5 +45,20 @@ public class EmployeeProjectService implements EmployeeProjectRepository {
             entityManager.merge(project);
 
         }
+    }
+
+    @Transactional
+    @Override
+// metodo per rimuovere un employee dal project
+    public void removeEmployeeFromProject(Long projectId, Long employeeId) {
+        Project project = projectService.findById(projectId);
+        Employee employee = employeeService.findById(employeeId);
+
+        if (!project.getEmployees().contains(employee)) {
+            throw new IllegalArgumentException("Employee with ID " + employeeId + " is not associated with project ID " + projectId + ".");
+        }
+
+        employee.getProjects().remove(project);
+        entityManager.merge(project);
     }
 }

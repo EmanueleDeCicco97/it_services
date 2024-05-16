@@ -56,4 +56,35 @@ public class EmployeeProjectController {
             return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
         }
     }
+
+    @DELETE // Metodo per dissociare un dipendente da un progetto
+    @Path("{idProject}/employee/{idEmployee}")
+    public Response removeEmployeeFromProject(@PathParam("idProject") Long idProject,
+                                              @PathParam("idEmployee") Long idEmployee) {
+        try {
+            // Ottenere l'utente corrente dal SecurityContext
+            String currentUsername = securityContext.getUserPrincipal().getName();
+            // Verifico se l'utente corrente è il project manager
+            Project project = projectService.findById(idProject);
+            if (!project.getUser().getUsername().equals(currentUsername) && securityContext.isUserInRole("project manager")) {
+                return Response.status(Response.Status.FORBIDDEN)
+                        .entity("You are not authorized to update this project")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build();
+            }
+            employeeProjectService.removeEmployeeFromProject(idProject, idEmployee);
+
+            return Response.ok().entity("Employee removed from the project.").type(MediaType.TEXT_PLAIN).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+    }
 }

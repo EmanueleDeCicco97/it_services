@@ -71,6 +71,7 @@ public class TechnologyService implements TechnologyRepository {
 
     //•	Esercitazione 2: Creare un endpoint per trovare le tecnologie più richieste dai clienti e visualizzare i dettagli
     // dei progetti in cui sono utilizzate queste tecnologie.
+    @Override
     public Map<String, Set<Project>> findMostTechnology() {
         //creo le liste e i set
         List<Technology> technologies = new ArrayList<Technology>();

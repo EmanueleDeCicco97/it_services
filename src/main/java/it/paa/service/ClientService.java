@@ -63,6 +63,7 @@ public class ClientService implements ClientRepository {
         em.remove(clientToDelete);
     }
 
+    @Override
     public List<Client> findAll() {
         List<Client> clients = em.createQuery("from Client", Client.class).getResultList();
         return clients;
