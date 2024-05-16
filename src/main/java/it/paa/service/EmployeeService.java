@@ -2,6 +2,8 @@ package it.paa.service;
 
 import it.paa.dto.EmployeeDto;
 import it.paa.model.Employee;
+import it.paa.model.Project;
+import it.paa.model.Technology;
 import it.paa.repository.EmployeeRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
@@ -10,6 +12,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -96,10 +99,22 @@ public class EmployeeService implements EmployeeRepository {
     }
 
     @Transactional
-    @Override //metodo per eliminare un employee
+    @Override
     public void delete(Long id) throws NotFoundException {
         Employee employeeToDelete = findById(id);
-        em.remove(employeeToDelete);
 
+        // Verifica se l'employee è associato a projects
+        Set<Project> projects = employeeToDelete.getProjects();
+        if (!projects.isEmpty()) {
+            throw new IllegalStateException("Employee with ID " + id + " is associated with projects. Remove employee from projects first.");
+        }
+
+        // Verifica se l'employee è associato a technologies
+        Set<Technology> technologies = employeeToDelete.getTechnologies();
+        if (!technologies.isEmpty()) {
+            throw new IllegalStateException("Employee with ID " + id + " is associated with technologies. Remove employee from technologies first.");
+        }
+
+        em.remove(employeeToDelete);
     }
 }
