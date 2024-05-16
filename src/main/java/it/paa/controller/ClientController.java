@@ -59,14 +59,12 @@ public class ClientController {
     }
 
     @POST //metodo per creare un nuovo cliente
-    @Path("/employees/{employee_id}")
-    public Response addClient(@PathParam("employee_id") Long employeeId, ClientDto clientDto) {
-        try {
-            // Controlla se l'ID del dipendente è stato fornito
-            if (employeeId != null) {
-                // Trova il dipendente corrispondente all'ID fornito
-                Employee employee = employeeService.findById(employeeId);
 
+    public Response addClient( ClientDto clientDto) {
+        try {
+                // Trova il dipendente corrispondente all'ID fornito
+                Employee employee = employeeService.findById(clientDto.getEmployeeId());
+            if (employee != null) {
                 // Assegna il dipendente al cliente
                 Client client = new Client();
                 client.setContactPerson(employee);
@@ -101,7 +99,7 @@ public class ClientController {
     }
 
 
-    @PUT //metodo per aggiornare un cliente
+    @PUT
     @Path("/{id}")
     public Response updateClient(@PathParam("id") Long id, ClientDto clientDto) {
         try {

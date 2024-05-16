@@ -2,8 +2,10 @@ package it.paa.service;
 
 import it.paa.dto.ClientDto;
 import it.paa.model.Client;
+import it.paa.model.Employee;
 import it.paa.repository.ClientRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -17,6 +19,8 @@ public class ClientService implements ClientRepository {
 
     @PersistenceContext
     private EntityManager em;
+    @Inject
+    EmployeeService employeeService;
 
     @Override // metodo per restituire il cliente in base al suo id
     public Client findById(Long id) throws NotFoundException {
@@ -44,13 +48,19 @@ public class ClientService implements ClientRepository {
     }
 
     @Transactional
-    @Override//metodo per aggiornare un cliente
+    @Override
     public Client update(Long id, ClientDto clientDto) throws NotFoundException {
         Client existingClient = findById(id);
-
         existingClient.setName(clientDto.getName());
         existingClient.setSector(clientDto.getSector());
         existingClient.setAddress(clientDto.getAddress());
+
+        // aggiorno l'employee solo se l'ID dell'employee nel DTO non è nullo
+        if (clientDto.getEmployeeId() != null) {
+            Employee employee = employeeService.findById(clientDto.getEmployeeId());
+            existingClient.setContactPerson(employee);
+        }
+
         em.merge(existingClient);
         return existingClient;
     }

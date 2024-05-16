@@ -11,6 +11,8 @@ public class ClientDto {
 
     private String address;
 
+    private Long employeeId;
+
     public ClientDto() {
     }
 
@@ -38,12 +40,21 @@ public class ClientDto {
         this.address = address;
     }
 
+    public Long getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
+    }
+
     @Override
     public String toString() {
         return "ClientDto{" +
                 "name='" + name + '\'' +
                 ", sector='" + sector + '\'' +
                 ", address='" + address + '\'' +
+                ", employeeId=" + employeeId +
                 '}';
     }
 }
