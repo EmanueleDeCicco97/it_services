@@ -10,6 +10,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityExistsException;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -82,8 +83,8 @@ public class TechnologyController {
 
             return Response.status(Response.Status.CREATED).type(MediaType.TEXT_PLAIN).entity("Technology created successfully").build();
 
-        } catch (EntityExistsException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("a technology with the same name already exists").type(MediaType.TEXT_PLAIN).build();
         }
     }
 
@@ -119,6 +120,8 @@ public class TechnologyController {
                     .entity(e.getMessage())
                     .type(MediaType.TEXT_PLAIN)
                     .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("a technology with the same name already exists").type(MediaType.TEXT_PLAIN).build();
         }
     }
 

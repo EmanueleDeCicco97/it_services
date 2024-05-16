@@ -143,6 +143,8 @@ public class ProjectController {
         } catch (NotFoundException e) {
 
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("a project with the same name already exists").type(MediaType.TEXT_PLAIN).build();
         }
     }
 
@@ -182,6 +184,8 @@ public class ProjectController {
                     .entity(e.getMessage())
                     .type(MediaType.TEXT_PLAIN)
                     .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("a project with the same name already exists").type(MediaType.TEXT_PLAIN).build();
         }
     }
 

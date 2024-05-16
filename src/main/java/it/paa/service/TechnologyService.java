@@ -36,7 +36,7 @@ public class TechnologyService implements TechnologyRepository {
 
     @Transactional
     @Override //metodo per salvare una tecnologia
-    public Technology save(Technology technology) throws IllegalArgumentException {
+    public Technology save(Technology technology) {
 
         entityManager.persist(technology);
 
