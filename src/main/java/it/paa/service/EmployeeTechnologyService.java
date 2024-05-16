@@ -17,7 +17,7 @@ public class EmployeeTechnologyService implements EmployeeTechnologyRepository {
     @PersistenceContext
     EntityManager entityManager;
     @Inject
-     EmployeeService employeeService;
+    EmployeeService employeeService;
     @Inject
     TechnologyService technologyService;
 

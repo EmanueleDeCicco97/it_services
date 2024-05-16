@@ -15,7 +15,7 @@ public class EmployeeProjectService implements EmployeeProjectRepository {
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
-     EmployeeService employeeService;
+    EmployeeService employeeService;
     @Inject
     ProjectService projectService;
 

@@ -1,16 +1,15 @@
 package it.paa.service;
 
 import it.paa.dto.ProjectDto;
-import it.paa.model.Employee;
 import it.paa.model.Project;
 import it.paa.model.Technology;
 import it.paa.repository.ProjectRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
