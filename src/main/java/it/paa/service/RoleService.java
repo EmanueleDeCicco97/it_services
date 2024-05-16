@@ -57,7 +57,5 @@ public class RoleService implements RoleRepository {
         } catch (NotFoundException e) {
             throw new NotFoundException("Role with id " + id + " not found.");
         }
-
-
     }
 }

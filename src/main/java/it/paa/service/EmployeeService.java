@@ -89,7 +89,7 @@ public class EmployeeService implements EmployeeRepository {
         existingEmployee.setRole(employeeDto.getRole());
         existingEmployee.setSalary(employeeDto.getSalary());
 
-        // aggiorna l'employee facendo il merge con il dato sul db
+        // aggiorno l'employee facendo il merge con il dato sul db
         em.merge(existingEmployee);
 
         return existingEmployee;

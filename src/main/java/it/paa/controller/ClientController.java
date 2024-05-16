@@ -85,8 +85,6 @@ public class ClientController {
                             .build();
                 }
 
-                // Effettua la validazione del cliente
-
                 clientService.save(client); // Salva il cliente dopo la validazione
             }
             return Response.status(Response.Status.CREATED)

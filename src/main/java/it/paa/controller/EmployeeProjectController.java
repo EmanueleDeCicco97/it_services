@@ -36,7 +36,7 @@ public class EmployeeProjectController {
         try {
             // Ottenere l'utente corrente dal SecurityContext
             String currentUsername = securityContext.getUserPrincipal().getName();
-            // Verifico se l'utente corrente è il project manager del progetto o l'admin
+            // Verifico se l'utente corrente è il project manager
             Project project = projectService.findById(idProject);
             if (!project.getUser().getUsername().equals(currentUsername) && securityContext.isUserInRole("project manager")) {
                 return Response.status(Response.Status.FORBIDDEN)

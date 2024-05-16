@@ -151,10 +151,10 @@ public class ProjectController {
     @Path("/{id}")
     public Response updateProject(@PathParam("id") Long id, ProjectDto projectDto) {
         try {
-            // Ottenere l'utente corrente dal SecurityContext
+            // Ottengo l'utente corrente dal SecurityContext
             String currentUsername = securityContext.getUserPrincipal().getName();
 
-            // Verificare se l'utente corrente è il project manager del progetto o l'admin
+            // Verifico se l'utente corrente è il project manager del progetto
             Project project = projectService.findById(id);
             if (!project.getUser().getUsername().equals(currentUsername) && securityContext.isUserInRole("project manager")) {
                 return Response.status(Response.Status.FORBIDDEN)
@@ -190,9 +190,9 @@ public class ProjectController {
     @Path("/{id}")
     public Response deleteProject(@PathParam("id") Long id) {
         try {
-            // Ottenere l'utente corrente dal SecurityContext
+            // Ottengo l'utente corrente dal SecurityContext
             String currentUsername = securityContext.getUserPrincipal().getName();
-            // Verificare se l'utente corrente è il project manager del progetto o l'admin
+            // Verifico se l'utente corrente è il project manager del progetto o l'admin
             Project project = projectService.findById(id);
             if (!project.getUser().getUsername().equals(currentUsername) && securityContext.isUserInRole("project manager")) {
                 return Response.status(Response.Status.FORBIDDEN)

@@ -7,12 +7,10 @@ import it.paa.model.Technology;
 import it.paa.repository.ProjectRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
-
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,8 +21,6 @@ public class ProjectService implements ProjectRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Inject
-    EmployeeService employeeService;
 
     // ricerca del progetto in base all'id
     @Override
@@ -55,7 +51,7 @@ public class ProjectService implements ProjectRepository {
         if (existingProject == null) {
             throw new NotFoundException("Project not found with id: " + id);
         }
-        // Aggiorno le informazioni del progetto esistente con quelle fornite nel parametro 'projectDto'
+        // Aggiorno le informazioni del progetto esistente con quelle fornite nel projectDto
         existingProject.setName(projectDto.getName());
         existingProject.setDescription(projectDto.getDescription());
         existingProject.setStartDate(projectDto.getStartDate());
