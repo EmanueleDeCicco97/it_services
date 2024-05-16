@@ -147,4 +147,14 @@ public class TechnologyService implements TechnologyRepository {
                 return false;
         }
     }
+
+    public Technology getTechnologyByNameIgnoreCase(String name) {
+        TypedQuery<Technology> query = entityManager.createQuery("SELECT t FROM Technology t WHERE LOWER(t.name) = LOWER(:name)", Technology.class);
+        query.setParameter("name", name);
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 }

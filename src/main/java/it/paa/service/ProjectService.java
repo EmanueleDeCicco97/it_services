@@ -6,7 +6,9 @@ import it.paa.model.Technology;
 import it.paa.repository.ProjectRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
@@ -104,5 +106,16 @@ public class ProjectService implements ProjectRepository {
         });
 
         return map;
+    }
+
+    // recupero il project in base al name con una query tiped
+    public Project getProjectByNameIgnoreCase(String name) {
+        TypedQuery<Project> query = entityManager.createQuery("SELECT p FROM Project p WHERE LOWER(p.name) = LOWER(:name)", Project.class);
+        query.setParameter("name", name);
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

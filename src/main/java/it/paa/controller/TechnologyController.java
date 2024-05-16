@@ -70,6 +70,11 @@ public class TechnologyController {
 
                 return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).type(MediaType.TEXT_PLAIN).build();
             }
+            // Controllo se esiste già una tecnologia con lo stesso nome (ignorando il case)
+            Technology existingTechnology = technologyService.getTechnologyByNameIgnoreCase(technologyDto.getName());
+            if (existingTechnology != null) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("A technology with the same name already exists").type(MediaType.TEXT_PLAIN).build();
+            }
 
             Technology technology = new Technology();
             technology.setName(technologyDto.getName());
@@ -91,6 +96,12 @@ public class TechnologyController {
     public Response updateTechnology(@PathParam("id") Long id, TechnologyDto technologyDto) {
 
         try {
+
+            // Controllo se esiste già una tecnologia con lo stesso nome (ignorando il case)
+            Technology existingTechnologyDB = technologyService.getTechnologyByNameIgnoreCase(technologyDto.getName());
+            if (existingTechnologyDB != null && !existingTechnologyDB.getId().equals(id)) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("A technology with the same name already exists").type(MediaType.TEXT_PLAIN).build();
+            }
             Technology existingTechnology = technologyService.findById(id);
 
             // Aggiorno le informazioni della tecnologia esistente con quelle fornite nel DTO

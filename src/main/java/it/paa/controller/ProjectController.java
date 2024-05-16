@@ -128,6 +128,12 @@ public class ProjectController {
                 return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN).entity(errorMessage).build();
             }
 
+            // Controllo se esiste già un progetto con lo stesso nome (ignorando il case)
+            Project existingProject = projectService.getProjectByNameIgnoreCase(projectDto.getName());
+            if (existingProject != null) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("A project with the same name already exists").type(MediaType.TEXT_PLAIN).build();
+            }
+
             User user = userService.getUserById(userId);
             // creo un nuovo progetto con i dati del dto
             Project project = new Project();
@@ -148,7 +154,7 @@ public class ProjectController {
     }
 
     @RolesAllowed({"admin", "project manager"})
-    @PUT //metodo per aggiornare un progetto
+    @PUT // metodo per aggiornare un progetto
     @Path("/{id}")
     public Response updateProject(@PathParam("id") Long id, ProjectDto projectDto) {
         try {
@@ -175,6 +181,12 @@ public class ProjectController {
                 return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN).entity(errorMessage).build();
             }
 
+            // Controllo se esiste già un progetto con lo stesso nome (ignorando il case) diverso dall'attuale progetto
+            Project existingProject = projectService.getProjectByNameIgnoreCase(projectDto.getName());
+            if (existingProject != null && !existingProject.getId().equals(id)) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("A project with the same name already exists").type(MediaType.TEXT_PLAIN).build();
+            }
+
             Project updatedProject = projectService.update(id, projectDto);
             return Response.ok(updatedProject).build();
 
@@ -184,9 +196,10 @@ public class ProjectController {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("a project with the same name already exists").type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("An error occurred while updating the project").type(MediaType.TEXT_PLAIN).build();
         }
     }
+
 
     @RolesAllowed({"admin", "project manager"})
     @DELETE //metodo per cancellare un progetto

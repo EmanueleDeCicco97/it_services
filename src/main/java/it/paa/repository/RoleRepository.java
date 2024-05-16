@@ -14,4 +14,6 @@ public interface RoleRepository {
     Role updateRole(Long id, Role role);
 
     void deleteRole(Long id);
+
+    Role getRoleByNameIgnoreCase(String name);
 }

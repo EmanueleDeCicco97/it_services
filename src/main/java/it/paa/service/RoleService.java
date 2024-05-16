@@ -5,7 +5,9 @@ import it.paa.repository.RoleRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
@@ -56,6 +58,16 @@ public class RoleService implements RoleRepository {
             entityManager.remove(role);
         } catch (NotFoundException e) {
             throw new NotFoundException("Role with id " + id + " not found.");
+        }
+    }
+
+    public Role getRoleByNameIgnoreCase(String name) {
+        TypedQuery<Role> query = entityManager.createQuery("SELECT r FROM Role r WHERE LOWER(r.name) = LOWER(:name)", Role.class);
+        query.setParameter("name", name);
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         }
     }
 }

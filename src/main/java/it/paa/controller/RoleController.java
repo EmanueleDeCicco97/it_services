@@ -46,6 +46,14 @@ public class RoleController {
     @POST
     public Response createRole(@Valid Role role) {
         try {
+            // Controllo se esiste già un ruolo con lo stesso nome (ignorando il case)
+            Role existingRole = roleService.getRoleByNameIgnoreCase(role.getName());
+            if (existingRole != null) {
+                return Response.status(Response.Status.CONFLICT)
+                        .entity("A role with the same name already exists")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build();
+            }
             Role createdRole = roleService.createRole(role);
             return Response.status(Response.Status.CREATED).entity(createdRole).build();
         } catch (PersistenceException e) {
@@ -58,6 +66,15 @@ public class RoleController {
     @Path("/{id}")
     public Response updateRole(@PathParam("id") Long id, @Valid Role roleDetails) {
         try {
+            // Controllo se esiste già un ruolo con lo stesso nome (ignorando il case) diverso dall'attuale ruolo
+            Role existingRole = roleService.getRoleByNameIgnoreCase(roleDetails.getName());
+            if (existingRole != null && !existingRole.getId().equals(id)) {
+                return Response.status(Response.Status.CONFLICT)
+                        .entity("A role with the same name already exists")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build();
+            }
+
 
             Role updatedRole = roleService.updateRole(id, roleDetails);
             return Response.ok(updatedRole).build();

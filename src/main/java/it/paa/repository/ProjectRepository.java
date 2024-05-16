@@ -23,6 +23,8 @@ public interface ProjectRepository {
 
     Map<Project, Set<Technology>> getProjectsWithTechnologies();
 
+    Project getProjectByNameIgnoreCase(String name);
+
 }
 
 

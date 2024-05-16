@@ -6,10 +6,7 @@ import it.paa.model.User;
 import it.paa.repository.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.PersistenceException;
+import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
@@ -117,6 +114,16 @@ public class UserService implements UserRepository {
         if (user.getRole() != null && user.getRole().getId().equals(roleId)) {
             user.setRole(null);
             updateUser(user, user.getId());
+        }
+    }
+
+    public User getUserByUsernameIgnoreCase(String username) {
+        TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u WHERE LOWER(u.username) = LOWER(:username)", User.class);
+        query.setParameter("username", username);
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         }
     }
 }

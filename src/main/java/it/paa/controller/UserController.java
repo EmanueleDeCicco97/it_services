@@ -63,6 +63,12 @@ public class UserController {
     @POST
     public Response createUser(User user, @QueryParam("roleId") Long roleId) {
         try {
+            // Controllo se esiste già un utente con lo stesso username (ignorando il case)
+            User existingUser = userService.getUserByUsernameIgnoreCase(user.getUsername());
+            if (existingUser != null) {
+                throw new PersistenceException("User already exists");
+            }
+
             userService.createUser(user, roleId);
             return Response.status(Response.Status.CREATED).type(MediaType.TEXT_PLAIN).entity("the user was created successfully").build();
         } catch (PersistenceException e) {
@@ -74,6 +80,11 @@ public class UserController {
     @Path("/{id}")
     public Response updateUser(@PathParam("id") Long id, User user) {
         try {
+            // Controllo se esiste già un utente con lo stesso username (ignorando il case) diverso dall'utente che si sta aggiornando
+            User existingUser = userService.getUserByUsernameIgnoreCase(user.getUsername());
+            if (existingUser != null && !existingUser.getId().equals(id)) {
+                throw new PersistenceException("User with the same username already exists");
+            }
             userService.updateUser(user, id);
             return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the user has been changed correctly").build();
         } catch (NotFoundException e) {
@@ -83,6 +94,8 @@ public class UserController {
                     .build();
         } catch (ArcUndeclaredThrowableException e) {
             return Response.status(Response.Status.CONFLICT).entity("a user with the same username already exists").type(MediaType.TEXT_PLAIN).build();
+        } catch (PersistenceException e) {
+            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
         }
 
     }

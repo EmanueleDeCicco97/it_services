@@ -23,4 +23,6 @@ public interface UserRepository {
     void assignRoleToUser(Long userId, Long roleId);
 
     void removeRoleFromUser(Long userId, Long roleId);
+
+    User getUserByUsernameIgnoreCase(String username);
 }
