@@ -56,11 +56,18 @@ public class EmployeeService implements EmployeeRepository {
     //restituisce l'employee in base al nome e cognome senza le associazioni
     public List<EmployeeDto> findAllByAttributes(String name, String surname) {
         List<Employee> employees = em.createQuery("SELECT e FROM Employee e", Employee.class).getResultList();
-
-        return employees.stream()
-                .filter(employee -> employee.getName().equalsIgnoreCase(name))
-                .filter(employee -> employee.getSurname().equalsIgnoreCase(surname))
-                .map(employee -> {
+        if (name != null && !name.isEmpty() && !name.isBlank() && surname != null && !surname.isEmpty() && !surname.isBlank()) {
+            employees = employees.stream()
+                    .filter(employee -> employee.getName().equalsIgnoreCase(name))
+                    .filter(employee -> employee.getSurname().equalsIgnoreCase(surname)).toList();
+        } else if (name != null && !name.isEmpty() && !name.isBlank()) {
+            employees = employees.stream()
+                    .filter(employee -> employee.getName().equalsIgnoreCase(name)).toList();
+        } else if (surname != null && !surname.isEmpty() && !surname.isBlank()) {
+            employees = employees.stream()
+                    .filter(employee -> employee.getSurname().equalsIgnoreCase(surname)).toList();
+        }
+        return employees.stream().map(employee -> {
                     EmployeeDto employeeDto = new EmployeeDto();
                     employeeDto.setName(employee.getName());
                     employeeDto.setSurname(employee.getSurname());

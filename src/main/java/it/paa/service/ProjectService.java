@@ -79,11 +79,22 @@ public class ProjectService implements ProjectRepository {
         // recupero i dati e li inserisco in una lista
         List<Project> filteredProjects = entityManager.createQuery("from Project", Project.class).getResultList();
 
-        // filtro per la lista
-        return filteredProjects.stream()
-                .filter(project -> project.getName().equalsIgnoreCase(name))
-                .filter(project -> startDate == null || project.getStartDate().equals(startDate))
-                .collect(Collectors.toList());
+        if (name != null && !name.isEmpty() && !name.isBlank() && startDate != null) {
+            filteredProjects = filteredProjects.stream()
+                    .filter(project -> project.getName().equalsIgnoreCase(name))
+                    .filter(project -> project.getStartDate().equals(startDate))
+                    .toList();
+        } else if (name != null && !name.isEmpty() && !name.isBlank()) {
+            filteredProjects = filteredProjects.stream()
+                    .filter(project -> project.getName().equalsIgnoreCase(name))
+                    .toList();
+        } else if (startDate != null) {
+            filteredProjects = filteredProjects.stream()
+                    .filter(project -> project.getStartDate().equals(startDate))
+                    .toList();
+        }
+
+        return filteredProjects;
     }
 
 

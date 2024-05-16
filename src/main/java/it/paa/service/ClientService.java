@@ -34,10 +34,21 @@ public class ClientService implements ClientRepository {
     @Override//metodo per restituire tutti i clienti in base ai parametri passati
     public List<Client> findAllByAttributes(String name, String sector) {
         List<Client> filteredClients = em.createQuery("from Client", Client.class).getResultList();
-        return filteredClients.stream()
-                .filter(client -> client.getName().equalsIgnoreCase(name))
-                .filter(client -> client.getSector().equalsIgnoreCase(sector))
-                .collect(Collectors.toList());
+
+        if (name != null && !name.isEmpty() && !name.isBlank() && sector != null && !sector.isEmpty() && !sector.isBlank()) {
+            filteredClients = filteredClients.stream()
+                    .filter(client -> client.getName().equalsIgnoreCase(name))
+                    .filter(client -> client.getSector().equalsIgnoreCase(sector))
+                    .collect(Collectors.toList());
+        } else if (name != null && !name.isEmpty() && !name.isBlank()) {
+            filteredClients = filteredClients.stream()
+                    .filter(client -> client.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+        } else if (sector != null && !sector.isEmpty() && !sector.isBlank()) {
+            filteredClients = filteredClients.stream()
+                    .filter(client -> client.getSector().equalsIgnoreCase(sector)).collect(Collectors.toList());
+        }
+
+        return filteredClients;
     }
 
     @Transactional

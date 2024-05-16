@@ -61,12 +61,22 @@ public class TechnologyService implements TechnologyRepository {
     public List<Technology> findAllByAttributes(String name, String experienceLevel) {
         List<Technology> technologies = entityManager.createQuery(" from Technology ", Technology.class)
                 .getResultList();
+        if (name != null && !name.isEmpty() && !name.isBlank() && experienceLevel != null && !experienceLevel.isEmpty() && !experienceLevel.isBlank()) {
+            technologies = technologies.stream()
+                    .filter(tech -> tech.getName().equalsIgnoreCase(name))
+                    .filter(tech -> tech.getRequiredExperienceLevel().equalsIgnoreCase(experienceLevel))
+                    .collect(Collectors.toList());
+        } else if (name != null && !name.isEmpty() && !name.isBlank()) {
+            technologies = technologies.stream()
+                    .filter(tech -> tech.getName().equalsIgnoreCase(name))
+                    .collect(Collectors.toList());
+        } else if (experienceLevel != null && !experienceLevel.isEmpty() && !experienceLevel.isBlank()) {
+            technologies = technologies.stream()
+                    .filter(tech -> tech.getRequiredExperienceLevel().equalsIgnoreCase(experienceLevel))
+                    .collect(Collectors.toList());
+        }
 
-        // Filtro i risultati in base ai criteri forniti utilizzando Stream e lambda
-        return technologies.stream()
-                .filter(tech -> tech.getName().equalsIgnoreCase(name))
-                .filter(tech -> tech.getRequiredExperienceLevel().equalsIgnoreCase(experienceLevel))
-                .collect(Collectors.toList());
+        return technologies;
     }
 
     //•	Esercitazione 2: Creare un endpoint per trovare le tecnologie più richieste dai clienti e visualizzare i dettagli

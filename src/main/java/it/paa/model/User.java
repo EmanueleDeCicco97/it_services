@@ -24,6 +24,7 @@ public class User {
 
     @NotBlank(message = "Password cannot be blank")
     @Column(name = "password", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) //per non mostrare la password nel json
     private String password;
 
     @ManyToOne(fetch = FetchType.EAGER)
