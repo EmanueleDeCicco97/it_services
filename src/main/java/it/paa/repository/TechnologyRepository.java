@@ -19,9 +19,7 @@ public interface TechnologyRepository {
 
     List<Technology> findAllByAttributes(String name, String experienceLevel);
 
-    void addEmployeeToTechnology(Long technologyId, Long employeeId);
-
-    boolean isEmployeeExperienceyValid(String experienceLevel, String role);
+    boolean isEmployeeExperienceValid(String experienceLevel, String role);
 
     Map<String, Set<Project>> findMostTechnology();
 }

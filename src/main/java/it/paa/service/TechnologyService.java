@@ -22,8 +22,6 @@ public class TechnologyService implements TechnologyRepository {
     private EntityManager entityManager;
 
     @Inject
-    EmployeeService employeeService;
-    @Inject
     ClientService clientService;
 
 
@@ -69,32 +67,6 @@ public class TechnologyService implements TechnologyRepository {
                 .filter(tech -> tech.getName().equalsIgnoreCase(name))
                 .filter(tech -> tech.getRequiredExperienceLevel().equalsIgnoreCase(experienceLevel))
                 .collect(Collectors.toList());
-    }
-
-    @Override//metodo per associare un employee a una tecnologia
-    @Transactional
-    public void addEmployeeToTechnology(Long technologyId, Long employeeId) throws IllegalArgumentException, NotFoundException {
-        // recupero technology e employee
-        Employee employee = employeeService.findById(employeeId);
-        Technology technology = findById(technologyId);
-
-        if (technology != null && employee != null) {
-            //check se gia esiste una associazione tra employee e technology
-            if (employee.getTechnologies().contains(technology)) {
-                throw new EntityExistsException("This employee with this id already assign at this technology");
-            }
-            // check se il role dell'employee rispetta i requisiti dell'esperienza della tecnologia
-            if (!isEmployeeExperienceyValid(technology.getRequiredExperienceLevel(), employee.getRole())) {
-                throw new IllegalArgumentException("This employee does not satisfy requirement for experience level: " + technology.getRequiredExperienceLevel());
-            }
-            // aggiunge la technology all'elenco delle technologies di employee
-            employee.addTechnology(technology);
-
-            // aggiunge gli oggetti nella tabella di mezzo delle 2 classi
-            entityManager.merge(employee);
-
-            System.out.println("Employee successfully added to the technology.");
-        }
     }
 
     //•	Esercitazione 2: Creare un endpoint per trovare le tecnologie più richieste dai clienti e visualizzare i dettagli
@@ -153,7 +125,7 @@ public class TechnologyService implements TechnologyRepository {
     //Validazioni avanzate (facoltative)  (continuo validazione)
     //Dipendente: Assicurarsi che il ruolo sia congruo rispetto all'esperienza del dipendente.
     @Override // Confronto tra role employee e experience technology
-    public boolean isEmployeeExperienceyValid(String experienceLevel, String role) {
+    public boolean isEmployeeExperienceValid(String experienceLevel, String role) {
         switch (experienceLevel.toLowerCase()) {
             case "senior":
 

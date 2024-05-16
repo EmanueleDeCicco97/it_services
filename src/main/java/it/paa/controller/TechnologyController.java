@@ -141,28 +141,6 @@ public class TechnologyController {
         }
     }
 
-    @POST //metodo per associare un employee a una tecnologia
-    @Path("/{technologyId}/employee/{employeeId}")
-    public Response addEmployeeToTechnology(
-            @PathParam("technologyId") Long technologyId,
-            @PathParam("employeeId") Long employeeId
-    ) {
-        try {
-
-            technologyService.addEmployeeToTechnology(technologyId, employeeId);
-            return Response.ok().entity("Employee successfully added to the technology.").type(MediaType.TEXT_PLAIN).build();
-
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
-
-        } catch (EntityExistsException e) {
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
-        } catch (IllegalArgumentException e) {
-
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
-        }
-    }
-
     //•	Esercitazione 2: Creare un endpoint per trovare le tecnologie più richieste dai clienti e visualizzare i dettagli
     // dei progetti in cui sono utilizzate queste tecnologie.
     @GET
