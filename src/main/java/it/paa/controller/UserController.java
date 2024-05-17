@@ -61,7 +61,8 @@ public class UserController {
 
 
     @POST
-    public Response createUser(User user, @QueryParam("roleId") Long roleId) {
+    @Path("/{roleId}")
+    public Response createUser(User user, @PathParam("roleId") Long roleId) {
         try {
             // Controllo se esiste già un utente con lo stesso username (ignorando il case)
             User existingUser = userService.getUserByUsernameIgnoreCase(user.getUsername());

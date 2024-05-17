@@ -115,7 +115,8 @@ public class ProjectController {
     }
 
     @POST //metodo per aggiungere un progetto
-    public Response addProject(@QueryParam("userId") Long userId, ProjectDto projectDto) {
+    @Path("/{userId}")
+    public Response addProject(@PathParam("userId") Long userId, ProjectDto projectDto) {
         try {
             // validazione dell'entità Project
             Set<ConstraintViolation<ProjectDto>> violations = validator.validate(projectDto);
@@ -129,12 +130,10 @@ public class ProjectController {
             }
 
             // Controllo se esiste già un progetto con lo stesso nome (ignorando il case)
-            Project existingProject = projectService.getProjectByNameIgnoreCase(projectDto.getName());
-            if (existingProject != null) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("A project with the same name already exists").type(MediaType.TEXT_PLAIN).build();
-            }
+
 
             User user = userService.getUserById(userId);
+
             // creo un nuovo progetto con i dati del dto
             Project project = new Project();
             project.setName(projectDto.getName());
@@ -142,6 +141,11 @@ public class ProjectController {
             project.setStartDate(projectDto.getStartDate());
             project.setEndDate(projectDto.getEndDate());
             project.setUser(user);
+
+            Project existingProject = projectService.getProjectByNameIgnoreCase(projectDto.getName());
+            if (existingProject != null) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("A project with the same name already exists").type(MediaType.TEXT_PLAIN).build();
+            }
 
             projectService.save(project);
             return Response.status(Response.Status.CREATED).type(MediaType.TEXT_PLAIN).entity("Project created successfully").build();

@@ -47,7 +47,7 @@ public class UserService implements UserRepository {
 
     public User getUserById(Long id) {
         User user = entityManager.find(User.class, id);
-        if (user == null) {
+        if (user == null || user.getUsername().isEmpty()|| user.getUsername().isBlank()) {
             throw new NotFoundException("User not found");
         }
         return user;
