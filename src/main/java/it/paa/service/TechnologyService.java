@@ -83,52 +83,43 @@ public class TechnologyService implements TechnologyRepository {
     // dei progetti in cui sono utilizzate queste tecnologie.
     @Override
     public Map<String, Set<Project>> findMostTechnology() {
-        //creo le liste e i set
-        List<Technology> technologies = new ArrayList<Technology>();
+        // trovo tutti i clienti e ottengo i loro employee
         List<Client> clients = clientService.findAll();
-        //utilizzo un set per evitare duplicati
-        Set<Employee> employees = new HashSet<>();
+        Set<Employee> employees = clients.stream()
+                .map(Client::getContactPerson)
+                .collect(Collectors.toSet());
 
-        //lista employee associati ai clienti
-        clients.forEach(client -> {
-            employees.add(client.getContactPerson());
-        });
+        // filtro gli employee che hanno progetti associati
+        List<Employee> employeesWithProjects = employees.stream()
+                .filter(employee -> !employee.getProjects().isEmpty())
+                .toList();
 
-        //filtriamo gli employee che hanno progetti associati
-        List<Employee> employeesFiltered = employees.stream().filter(employee -> !employee.getProjects().isEmpty()).toList();
-
-        // vado a prendere tutte le tecnologie associate agli employee filtrati
-        employeesFiltered.forEach(employee -> {
-            technologies.addAll(employee.getTechnologies());
-        }); //lista tecnologie associate agli employee
+        // ottengo tutte le tecnologie associate agli employee filtrati
+        List<Technology> technologies = employeesWithProjects.stream()
+                .flatMap(employee -> employee.getTechnologies().stream())
+                .toList();
 
         // trovo la tecnologia più ricorrente
         Optional<Technology> mostCommonTechnology = technologies.stream()
-                //raggruppo creando una map con la tecnologia come chiave e il numero di occorrenze
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream()
-                // trovo la tecnologia più ricorrente
                 .max(Map.Entry.comparingByValue())
-                // restituisco la tecnologia
                 .map(Map.Entry::getKey);
 
-        // filtriamo gli employee che hanno la tecnologia più ricorrente
-        List<Employee> esmployeesPopularTechnology = employeesFiltered.stream()
-                .filter(employee -> employee.getTechnologies()
-                        .contains(mostCommonTechnology.orElse(null))).toList();
-        // filtriamo i progetti associati agli employee che hanno la tecnologia più ricorrente
+        // Se non ci sono tecnologie, ritorno una mappa vuota
+        if (mostCommonTechnology.isEmpty()) {
+            return Collections.emptyMap();
+        }
 
-        //utilizzo un set per evitare duplicati
-        Set<Project> projectsPopularTechnology = new HashSet<>();
+        // filtro gli employee che utilizzano la tecnologia più ricorrente
+        Set<Project> projectsUsingMostCommonTechnology = employeesWithProjects.stream()
+                .filter(employee -> employee.getTechnologies().contains(mostCommonTechnology.get()))
+                .flatMap(employee -> employee.getProjects().stream())
+                .collect(Collectors.toSet());
 
-        esmployeesPopularTechnology.forEach(employee -> {
-            projectsPopularTechnology.addAll(employee.getProjects());
-
-        });
-        //restituisco la mappa con la tecnologia più ricorrente e i progetti associati
-        //utilizzo un map per far uscire il nome della tecnologia e tutti i progetti associati
+        // creo la mappa con il nome della tecnologia e i progetti associati
         Map<String, Set<Project>> technologyProjectMap = new HashMap<>();
-        technologyProjectMap.put(mostCommonTechnology.orElse(null).getName(), projectsPopularTechnology);
+        technologyProjectMap.put(mostCommonTechnology.get().getName(), projectsUsingMostCommonTechnology);
 
         return technologyProjectMap;
     }
