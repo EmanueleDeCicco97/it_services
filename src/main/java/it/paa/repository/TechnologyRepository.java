@@ -21,7 +21,7 @@ public interface TechnologyRepository {
 
     boolean isEmployeeExperienceValid(String experienceLevel, String role);
 
-    Map<String, Set<Project>> findMostTechnology();
+    Map<Technology, Set<Project>> findMostTechnologies();
 
     Technology getTechnologyByNameIgnoreCase(String name);
 }

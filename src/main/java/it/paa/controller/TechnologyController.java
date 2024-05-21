@@ -153,22 +153,35 @@ public class TechnologyController {
         }
     }
 
-    //•	Esercitazione 2: Creare un endpoint per trovare le tecnologie più richieste dai clienti e visualizzare i dettagli
-    // dei progetti in cui sono utilizzate queste tecnologie.
+//    //•	Esercitazione 2: Creare un endpoint per trovare le tecnologie più richieste dai clienti e visualizzare i dettagli
+//    // dei progetti in cui sono utilizzate queste tecnologie.
+//    @GET
+//    @RolesAllowed({"admin", "project manager"})
+//    // ritengo opportuno come autorizzazione avanzata che sia l'admin che il pm possono vedere l'andamento delle varie tecnologie
+//    @Path("/most-requested")
+//    public Response getMostCommonTechnology() {
+//        try {
+//
+//            Map<String, Set<Project>> mostCommonTechnology = technologyService.findMostTechnology();
+//
+//            return Response.ok(mostCommonTechnology).build();
+//        } catch (Exception e) {
+//            return Response.status(Response.Status.NO_CONTENT).type(MediaType.TEXT_PLAIN).entity("No technology found").build();
+//        }
+//    }
+
+
     @GET
-    @RolesAllowed({"admin", "project manager"})
-    // ritengo opportuno come autorizzazione avanzata che sia l'admin che il pm possono vedere l'andamento delle varie tecnologie
-    @Path("/most-requested")
-    public Response getMostCommonTechnology() {
+    @Path("/most-technologies")
+    public Response getMostCommonTechnologies() {
         try {
 
-            Map<String, Set<Project>> mostCommonTechnology = technologyService.findMostTechnology();
+            Map<Technology, Set<Project>> mostCommonTechnology = technologyService.findMostTechnologies();
 
             return Response.ok(mostCommonTechnology).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NO_CONTENT).type(MediaType.TEXT_PLAIN).entity("No technology found").build();
         }
     }
-
 }
 

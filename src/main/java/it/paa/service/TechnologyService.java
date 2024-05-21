@@ -81,48 +81,48 @@ public class TechnologyService implements TechnologyRepository {
 
     //•	Esercitazione 2: Creare un endpoint per trovare le tecnologie più richieste dai clienti e visualizzare i dettagli
     // dei progetti in cui sono utilizzate queste tecnologie.
-    @Override
-    public Map<String, Set<Project>> findMostTechnology() {
-        // trovo tutti i clienti e ottengo i loro employee
-        List<Client> clients = clientService.findAll();
-        Set<Employee> employees = clients.stream()
-                .map(Client::getContactPerson)
-                .collect(Collectors.toSet());
-
-        // filtro gli employee che hanno progetti associati
-        List<Employee> employeesWithProjects = employees.stream()
-                .filter(employee -> !employee.getProjects().isEmpty())
-                .toList();
-
-        // ottengo tutte le tecnologie associate agli employee filtrati
-        List<Technology> technologies = employeesWithProjects.stream()
-                .flatMap(employee -> employee.getTechnologies().stream())
-                .toList();
-
-        // trovo la tecnologia più ricorrente
-        Optional<Technology> mostCommonTechnology = technologies.stream()
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .entrySet().stream()
-                .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey);
-
-        // Se non ci sono tecnologie, ritorno una mappa vuota
-        if (mostCommonTechnology.isEmpty()) {
-            return Collections.emptyMap();
-        }
-
-        // filtro gli employee che utilizzano la tecnologia più ricorrente
-        Set<Project> projectsUsingMostCommonTechnology = employeesWithProjects.stream()
-                .filter(employee -> employee.getTechnologies().contains(mostCommonTechnology.get()))
-                .flatMap(employee -> employee.getProjects().stream())
-                .collect(Collectors.toSet());
-
-        // creo la mappa con il nome della tecnologia e i progetti associati
-        Map<String, Set<Project>> technologyProjectMap = new HashMap<>();
-        technologyProjectMap.put(mostCommonTechnology.get().getName(), projectsUsingMostCommonTechnology);
-
-        return technologyProjectMap;
-    }
+//    @Override
+//    public Map<String, Set<Project>> findMostTechnology() {
+//        // trovo tutti i clienti e ottengo i loro employee
+//        List<Client> clients = clientService.findAll();
+//        Set<Employee> employees = clients.stream()
+//                .map(Client::getContactPerson)
+//                .collect(Collectors.toSet());
+//
+//        // filtro gli employee che hanno progetti associati
+//        List<Employee> employeesWithProjects = employees.stream()
+//                .filter(employee -> !employee.getProjects().isEmpty())
+//                .toList();
+//
+//        // ottengo tutte le tecnologie associate agli employee filtrati
+//        List<Technology> technologies = employeesWithProjects.stream()
+//                .flatMap(employee -> employee.getTechnologies().stream())
+//                .toList();
+//
+//        // trovo la tecnologia più ricorrente
+//        Optional<Technology> mostCommonTechnology = technologies.stream()
+//                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+//                .entrySet().stream()
+//                .max(Map.Entry.comparingByValue())
+//                .map(Map.Entry::getKey);
+//
+//        // Se non ci sono tecnologie, ritorno una mappa vuota
+//        if (mostCommonTechnology.isEmpty()) {
+//            return Collections.emptyMap();
+//        }
+//
+//        // filtro gli employee che utilizzano la tecnologia più ricorrente
+//        Set<Project> projectsUsingMostCommonTechnology = employeesWithProjects.stream()
+//                .filter(employee -> employee.getTechnologies().contains(mostCommonTechnology.get()))
+//                .flatMap(employee -> employee.getProjects().stream())
+//                .collect(Collectors.toSet());
+//
+//        // creo la mappa con il nome della tecnologia e i progetti associati
+//        Map<String, Set<Project>> technologyProjectMap = new HashMap<>();
+//        technologyProjectMap.put(mostCommonTechnology.get().getName(), projectsUsingMostCommonTechnology);
+//
+//        return technologyProjectMap;
+//    }
 
     //Validazioni avanzate (facoltative)  (continuo validazione)
     //Dipendente: Assicurarsi che il ruolo sia congruo rispetto all'esperienza del dipendente.
@@ -158,4 +158,56 @@ public class TechnologyService implements TechnologyRepository {
             return null;
         }
     }
+
+
+    //•	Esercitazione 2: Creare un endpoint per trovare le tecnologie più richieste dai clienti e visualizzare i dettagli
+    // dei progetti in cui sono utilizzate queste tecnologie.
+    public Map<Technology, Set<Project>> findMostTechnologies() {
+        // recupero tutti i clienti e i loro contatti (employee)
+        List<Client> clients = clientService.findAll();
+        Set<Employee> employees = clients.stream()
+                .map(Client::getContactPerson)
+                .collect(Collectors.toSet());
+
+        // filtro gli employee che hanno progetti associati
+        List<Employee> employeesWithProjects = employees.stream()
+                .filter(employee -> !employee.getProjects().isEmpty())
+                .toList();
+
+        // ottengo tutte le tecnologie associate agli employee filtrati
+        List<Technology> allTechnologies = employeesWithProjects.stream()
+                .flatMap(employee -> employee.getTechnologies().stream())
+                .toList();
+
+        // conto le occorrenze di ciascuna tecnologia
+        Map<Technology, Long> technologyOccurrences = allTechnologies.stream()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        // trovo il numero massimo di occorrenze tra tutte le tecnologie
+        long maxOccurrences = Collections.max(technologyOccurrences.values());
+
+        // ottengo tutte le tecnologie che hanno lo stesso numero massimo di occorrenze
+        Set<Technology> mostUsedTechnologies = technologyOccurrences.entrySet().stream()
+                .filter(entry -> entry.getValue() == maxOccurrences)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+
+        // mappo per memorizzare i progetti associati a ciascuna tecnologia più utilizzata
+        Map<Technology, Set<Project>> technologyProjectMap = new HashMap<>();
+
+        // per ogni tecnologia più utilizzata, ottiene i progetti associati
+        mostUsedTechnologies.forEach(technology -> {
+            Set<Project> projectsUsingTechnology = employeesWithProjects.stream()
+                    .filter(employee -> employee.getTechnologies().contains(technology))
+                    .flatMap(employee -> employee.getProjects().stream())
+                    .collect(Collectors.toSet());
+
+            // inserisco nella mappa i progetti associati alla tecnologia
+            technologyProjectMap.put(technology, projectsUsingTechnology);
+        });
+
+        // restituisco la mappa contenente tutte le tecnologie più utilizzate e i progetti associati
+        return technologyProjectMap;
+    }
+
 }
