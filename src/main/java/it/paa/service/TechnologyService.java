@@ -165,13 +165,17 @@ public class TechnologyService implements TechnologyRepository {
     //inner join employee_technology et on c.contact_person_id = et.employee_id
 
     // 2 query per avvicinarmi alle tecnologie più utilizzate
-    //select distinct t.* from technology t
-    //inner join
-    //(select et.technology_id
-    //from client c
-    //inner join employee_project ep on c.contact_person_id = ep.employee_id
-    //inner join employee_technology et on c.contact_person_id = et.employee_id) as tech
-    //on t.id = tech.technology_id
+    //SELECT t.*, COUNT(*) AS usage_count
+    //FROM technology t
+    //INNER JOIN (
+    //    SELECT et.technology_id
+    //    FROM client c
+    //    INNER JOIN employee_project ep ON c.contact_person_id = ep.employee_id
+    //    INNER JOIN employee_technology et ON ep.employee_id = et.employee_id
+    //) AS tech ON t.id = tech.technology_id
+    //GROUP BY t.id
+    //HAVING COUNT(*) >= 2
+    //ORDER BY usage_count DESC;
 
     //•	Esercitazione 2: Creare un endpoint per trovare le tecnologie più richieste dai clienti e visualizzare i dettagli
     // dei progetti in cui sono utilizzate queste tecnologie.
