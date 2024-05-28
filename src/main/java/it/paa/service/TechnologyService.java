@@ -227,4 +227,50 @@ public class TechnologyService implements TechnologyRepository {
         return technologyProjectMap;
     }
 
+
+//    public Map<Technology, Set<Project>> findMostTechnologies() {
+//        String queryCheck = "SELECT t.*, COUNT(*) AS usage_count" +
+//                " FROM technology t" +
+//                " INNER JOIN (" +
+//                "    SELECT et.technology_id" +
+//                "    FROM client c" +
+//                "    INNER JOIN employee_project ep ON c.contact_person_id = ep.employee_id" +
+//                "    INNER JOIN employee_technology et ON ep.employee_id = et.employee_id" +
+//                " ) AS tech ON t.id = tech.technology_id" +
+//                " GROUP BY t.id" +
+//                " ORDER BY usage_count DESC";
+//
+//        // Questa query deve essere una NativeQuery, non una TypedQuery, perché stiamo selezionando più di un'entità
+//        List<Object[]> results = entityManager.createNativeQuery(queryCheck)
+//                .getResultList();
+//
+//        Map<Technology, Set<Project>> technologyProjectsMap = new LinkedHashMap<>(); //ho usato la linked per preservare l'ordinamento
+//
+//        for (Object[] result : results) {
+//
+//            Technology technology = new Technology();
+//            technology.setId((Long) result[0]);
+//            technology.setDescription((String) result[1]);
+//            technology.setName((String) result[2]);
+//            technology.setRequiredExperienceLevel((String) result[3]);
+//
+//            String queryProject = "select p.*" +
+//                    "from technology t " +
+//                    "inner join employee_technology et on t.id = et.technology_id " +
+//                    "inner join employee_project ep on et.employee_id = ep.employee_id " +
+//                    "inner join project p on ep.project_id = p.id " +
+//                    "where et.technology_id = :technologyID";
+//
+//            List<Project> queryProjects = entityManager.createNativeQuery(queryProject, Project.class)
+//                    .setParameter("technologyID", technology.getId()).getResultList();
+//
+//
+//            Set<Project> projects = new HashSet<>(queryProjects);
+//
+//            technologyProjectsMap.put(technology, projects);
+//        }
+//
+//        return technologyProjectsMap;
+//    }
+
 }
