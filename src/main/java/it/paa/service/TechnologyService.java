@@ -229,6 +229,8 @@ public class TechnologyService implements TechnologyRepository {
 
 
 //    public Map<Technology, Set<Project>> findMostTechnologies() {
+//        // recupero le tecnoogie che sono associate a employee che a loro volta sono associati aalmeno un progetto e cliente
+//
 //        String queryCheck = "SELECT t.*, COUNT(*) AS usage_count" +
 //                " FROM technology t" +
 //                " INNER JOIN (" +
@@ -254,6 +256,7 @@ public class TechnologyService implements TechnologyRepository {
 //            technology.setName((String) result[2]);
 //            technology.setRequiredExperienceLevel((String) result[3]);
 //
+//            // recupero i progetti associati agli employee che sono associati a quella tecnologia
 //            String queryProject = "select p.*" +
 //                    "from technology t " +
 //                    "inner join employee_technology et on t.id = et.technology_id " +
