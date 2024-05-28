@@ -158,19 +158,6 @@ public class TechnologyController {
 //    @GET
 //    @RolesAllowed({"admin", "project manager"})
 //    // ritengo opportuno come autorizzazione avanzata che sia l'admin che il pm possono vedere l'andamento delle varie tecnologie
-//    @Path("/most-requested")
-//    public Response getMostCommonTechnology() {
-//        try {
-//
-//            Map<String, Set<Project>> mostCommonTechnology = technologyService.findMostTechnology();
-//
-//            return Response.ok(mostCommonTechnology).build();
-//        } catch (Exception e) {
-//            return Response.status(Response.Status.NO_CONTENT).type(MediaType.TEXT_PLAIN).entity("No technology found").build();
-//        }
-//    }
-
-
     @GET
     @Path("/most-technologies")
     public Response getMostCommonTechnologies() {
