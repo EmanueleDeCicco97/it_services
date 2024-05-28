@@ -69,6 +69,9 @@ public class ClientController {
             if (clientDto.getEmployeeId() != null) {
                 // Trova il dipendente corrispondente all'ID fornito e lo assegna al cliente
                 employee = employeeService.findById(clientDto.getEmployeeId());
+
+                // correzione assegnazione employee al client
+                client.setContactPerson(employee);
             }
             client.setName(clientDto.getName());
             client.setSector(clientDto.getSector());
