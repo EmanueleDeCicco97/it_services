@@ -7,6 +7,7 @@ import it.paa.model.Technology;
 import it.paa.model.User;
 import it.paa.service.ProjectService;
 import it.paa.service.UserService;
+import it.paa.util.ErrorMessage;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -59,8 +60,8 @@ public class ProjectController {
 
         } catch (DateTimeParseException e) {
             // gestisco eventuali errori nel parsing
-            return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN)
-                    .entity("\n" + "Invalid date format. Make sure you use the format dd-MM-yyyy.")
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorMessage("Invalid date format. Make sure you use the format dd-MM-yyyy."))
                     .build();
         }
 
@@ -86,16 +87,14 @@ public class ProjectController {
             String currentUsername = securityContext.getUserPrincipal().getName();
             if (!project.getUser().getUsername().equals(currentUsername) && securityContext.isUserInRole("project manager")) {
                 return Response.status(Response.Status.FORBIDDEN)
-                        .entity("You are not authorized to update this project")
-                        .type(MediaType.TEXT_PLAIN)
+                        .entity(new ErrorMessage("You are not authorized to update this project"))
                         .build();
             }
 
             return Response.ok(project).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         }
     }
@@ -109,7 +108,7 @@ public class ProjectController {
         Map<Project, Set<Technology>> map = projectService.getProjectsWithTechnologies();
 
         if (map.isEmpty()) {
-            return Response.noContent().type(MediaType.TEXT_PLAIN).entity("no projects found").build();
+            return Response.noContent().entity(new ErrorMessage("no projects found")).build();
         }
         return Response.ok(map).build();
     }
@@ -126,12 +125,10 @@ public class ProjectController {
                         .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
                         .collect(Collectors.joining("\n"));
 
-                return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN).entity(errorMessage).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage(errorMessage)).build();
             }
 
             // Controllo se esiste già un progetto con lo stesso nome (ignorando il case)
-
-
             User user = userService.getUserById(userId);
 
             // creo un nuovo progetto con i dati del dto
@@ -144,16 +141,16 @@ public class ProjectController {
 
             Project existingProject = projectService.getProjectByNameIgnoreCase(projectDto.getName());
             if (existingProject != null) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("A project with the same name already exists").type(MediaType.TEXT_PLAIN).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage("A project with the same name already exists")).build();
             }
 
             projectService.save(project);
-            return Response.status(Response.Status.CREATED).type(MediaType.TEXT_PLAIN).entity("Project created successfully").build();
+            return Response.status(Response.Status.CREATED).entity(new ErrorMessage("Project created successfully")).build();
         } catch (NotFoundException e) {
 
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorMessage(e.getMessage())).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("a project with the same name already exists").type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage("a project with the same name already exists")).build();
         }
     }
 
@@ -169,8 +166,7 @@ public class ProjectController {
             Project project = projectService.findById(id);
             if (!project.getUser().getUsername().equals(currentUsername) && securityContext.isUserInRole("project manager")) {
                 return Response.status(Response.Status.FORBIDDEN)
-                        .entity("You are not authorized to update this project")
-                        .type(MediaType.TEXT_PLAIN)
+                        .entity(new ErrorMessage("You are not authorized to update this project"))
                         .build();
             }
 
@@ -182,13 +178,13 @@ public class ProjectController {
                         .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
                         .collect(Collectors.joining("\n"));
 
-                return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN).entity(errorMessage).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage(errorMessage)).build();
             }
 
             // Controllo se esiste già un progetto con lo stesso nome (ignorando il case) diverso dall'attuale progetto
             Project existingProject = projectService.getProjectByNameIgnoreCase(projectDto.getName());
             if (existingProject != null && !existingProject.getId().equals(id)) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("A project with the same name already exists").type(MediaType.TEXT_PLAIN).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage("A project with the same name already exists")).build();
             }
 
             Project updatedProject = projectService.update(id, projectDto);
@@ -196,11 +192,10 @@ public class ProjectController {
 
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("An error occurred while updating the project").type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage("An error occurred while updating the project")).build();
         }
     }
 
@@ -216,21 +211,18 @@ public class ProjectController {
             Project project = projectService.findById(id);
             if (!project.getUser().getUsername().equals(currentUsername) && securityContext.isUserInRole("project manager")) {
                 return Response.status(Response.Status.FORBIDDEN)
-                        .entity("You are not authorized to update this project")
-                        .type(MediaType.TEXT_PLAIN)
+                        .entity(new ErrorMessage("You are not authorized to update this project"))
                         .build();
             }
             projectService.delete(id);
-            return Response.ok().entity("Project successfully deleted").type(MediaType.TEXT_PLAIN).build();
+            return Response.ok().entity(new ErrorMessage("Project successfully deleted")).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         } catch (ArcUndeclaredThrowableException e) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity("remove associations before removing a project")
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage("remove associations before removing a project"))
                     .build();
         }
     }

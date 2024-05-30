@@ -6,6 +6,7 @@ import it.paa.model.Client;
 import it.paa.model.Employee;
 import it.paa.service.ClientService;
 import it.paa.service.EmployeeService;
+import it.paa.util.ErrorMessage;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
@@ -26,13 +27,13 @@ import java.util.stream.Collectors;
 public class ClientController {
 
     @Inject
-    private ClientService clientService;
+    ClientService clientService;
 
     @Inject
     EmployeeService employeeService;
 
     @Inject
-    private Validator validator;
+    Validator validator;
 
     @GET //metodo per recuperare tutti i clienti
     public Response getAllClients(@QueryParam("name") String name,
@@ -52,8 +53,7 @@ public class ClientController {
             return Response.ok(client).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Client not found with id: " + id)
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage("Client not found with id: " + id))
                     .build();
         }
     }
@@ -83,22 +83,20 @@ public class ClientController {
                         .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
                         .collect(Collectors.joining("\n"));
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(errorMessage)
-                        .type(MediaType.TEXT_PLAIN)
+                        .entity(new ErrorMessage(errorMessage))
                         .build();
             }
 
             clientService.save(client); // Salva il cliente dopo la validazione
 
             return Response.status(Response.Status.CREATED)
-                    .entity("Client created successfully")
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage("Client created successfully"))
+
                     .build();
         } catch (NotFoundException e) {
             // Gestione dell'eccezione se l'ID del dipendente non è valido
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         }
     }
@@ -114,16 +112,14 @@ public class ClientController {
                         .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
                         .collect(Collectors.joining("\n"));
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(errorMessage)
-                        .type(MediaType.TEXT_PLAIN)
+                        .entity(new ErrorMessage(errorMessage))
                         .build();
             }
             Client updatedClient = clientService.update(id, clientDto);
             return Response.ok(updatedClient).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         }
     }
@@ -134,16 +130,13 @@ public class ClientController {
         try {
             clientService.delete(id);
             return Response.ok()
-                    .entity("Client successfully deleted")
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage("Client successfully deleted"))
                     .build();
 
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         }
     }
-
 }

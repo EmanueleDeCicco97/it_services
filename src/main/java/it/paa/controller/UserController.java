@@ -3,6 +3,7 @@ package it.paa.controller;
 import io.quarkus.arc.ArcUndeclaredThrowableException;
 import it.paa.model.User;
 import it.paa.service.UserService;
+import it.paa.util.ErrorMessage;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -30,12 +31,11 @@ public class UserController {
         try {
             User autenticateUser = userService.authenticateUser(user.getUsername(), user.getPassword());
 
-            return Response.ok().entity(autenticateUser.getUsername() + " logged in successfully").type(MediaType.TEXT_PLAIN).build();
+            return Response.ok().entity(new ErrorMessage(autenticateUser.getUsername() + " logged in successfully")).build();
 
         } catch (NotFoundException e) {
             return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         }
     }
@@ -53,8 +53,7 @@ public class UserController {
             return Response.ok().entity(user).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         }
     }
@@ -71,9 +70,9 @@ public class UserController {
             }
 
             userService.createUser(user, roleId);
-            return Response.status(Response.Status.CREATED).type(MediaType.TEXT_PLAIN).entity("the user was created successfully").build();
+            return Response.status(Response.Status.CREATED).entity(new ErrorMessage("the user was created successfully")).build();
         } catch (PersistenceException e) {
-            return Response.status(Response.Status.CONFLICT).type(MediaType.TEXT_PLAIN).entity(e.getMessage()).build();
+            return Response.status(Response.Status.CONFLICT).entity(new ErrorMessage(e.getMessage())).build();
         }
     }
 
@@ -87,16 +86,15 @@ public class UserController {
                 throw new PersistenceException("User with the same username already exists");
             }
             userService.updateUser(user, id);
-            return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the user has been changed correctly").build();
+            return Response.status(Response.Status.OK).entity(new ErrorMessage("the user has been changed correctly")).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         } catch (ArcUndeclaredThrowableException e) {
-            return Response.status(Response.Status.CONFLICT).entity("a user with the same username already exists").type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.CONFLICT).entity(new ErrorMessage("a user with the same username already exists")).build();
         } catch (PersistenceException e) {
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.CONFLICT).entity(new ErrorMessage(e.getMessage())).build();
         }
 
     }
@@ -106,14 +104,13 @@ public class UserController {
     public Response deleteUser(@PathParam("id") Long id) {
         try {
             userService.deleteUser(id);
-            return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the user was successfully deleted").build();
+            return Response.status(Response.Status.OK).entity(new ErrorMessage("the user was successfully deleted")).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         } catch (ArcUndeclaredThrowableException e) {
-            return Response.status(Response.Status.CONFLICT).entity("delete associations before deleting user").type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.CONFLICT).entity(new ErrorMessage("delete associations before deleting user")).build();
         }
 
     }
@@ -123,11 +120,10 @@ public class UserController {
     public Response assignRoleToUser(@PathParam("userId") Long userId, @PathParam("roleId") Long roleId) {
         try {
             userService.assignRoleToUser(userId, roleId);
-            return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the role was changed successfully").build();
+            return Response.status(Response.Status.OK).entity(new ErrorMessage("the role was changed successfully")).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         }
     }
@@ -137,11 +133,10 @@ public class UserController {
     public Response revokeRoleFromUser(@PathParam("userId") Long userId) {
         try {
             userService.removeRoleFromUser(userId);
-            return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity("the role was successfully revoked").build();
+            return Response.status(Response.Status.OK).entity(new ErrorMessage("the role was successfully revoked")).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         }
     }

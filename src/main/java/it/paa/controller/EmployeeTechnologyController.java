@@ -1,6 +1,7 @@
 package it.paa.controller;
 
 import it.paa.service.EmployeeTechnologyService;
+import it.paa.util.ErrorMessage;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityExistsException;
@@ -26,13 +27,13 @@ public class EmployeeTechnologyController {
         try {
 
             employeeTechnologyService.addEmployeeToTechnology(technologyId, employeeId);
-            return Response.ok().entity("Employee successfully added to the technology.").type(MediaType.TEXT_PLAIN).build();
+            return Response.ok().entity(new ErrorMessage("Employee successfully added to the technology.")).build();
 
         } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorMessage(e.getMessage())).build();
 
         } catch (EntityExistsException e) {
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.CONFLICT).entity(new ErrorMessage(e.getMessage())).build();
         }
     }
 
@@ -44,10 +45,10 @@ public class EmployeeTechnologyController {
     ) {
         try {
             employeeTechnologyService.removeEmployeeFromTechnology(technologyId, employeeId);
-            return Response.ok().entity("Employee successfully removed from the technology.").type(MediaType.TEXT_PLAIN).build();
+            return Response.ok().entity(new ErrorMessage("Employee successfully removed from the technology.")).build();
 
         } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorMessage(e.getMessage())).build();
 
         }
     }

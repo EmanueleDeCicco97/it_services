@@ -3,6 +3,7 @@ package it.paa.controller;
 import io.quarkus.arc.ArcUndeclaredThrowableException;
 import it.paa.model.Role;
 import it.paa.service.RoleService;
+import it.paa.util.ErrorMessage;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.persistence.PersistenceException;
@@ -36,8 +37,7 @@ public class RoleController {
             return Response.ok(role).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         }
     }
@@ -50,14 +50,13 @@ public class RoleController {
             Role existingRole = roleService.getRoleByNameIgnoreCase(role.getName());
             if (existingRole != null) {
                 return Response.status(Response.Status.CONFLICT)
-                        .entity("A role with the same name already exists")
-                        .type(MediaType.TEXT_PLAIN)
+                        .entity(new ErrorMessage("A role with the same name already exists"))
                         .build();
             }
             Role createdRole = roleService.createRole(role);
             return Response.status(Response.Status.CREATED).entity(createdRole).build();
         } catch (PersistenceException e) {
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.CONFLICT).entity(new ErrorMessage(e.getMessage())).build();
         }
 
     }
@@ -70,8 +69,7 @@ public class RoleController {
             Role existingRole = roleService.getRoleByNameIgnoreCase(roleDetails.getName());
             if (existingRole != null && !existingRole.getId().equals(id)) {
                 return Response.status(Response.Status.CONFLICT)
-                        .entity("A role with the same name already exists")
-                        .type(MediaType.TEXT_PLAIN)
+                        .entity(new ErrorMessage("A role with the same name already exists"))
                         .build();
             }
 
@@ -82,7 +80,7 @@ public class RoleController {
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (ArcUndeclaredThrowableException e) {
-            return Response.status(Response.Status.CONFLICT).entity("A role with the name entered already exists").type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.CONFLICT).entity(new ErrorMessage("A role with the name entered already exists")).build();
         }
     }
 
@@ -94,11 +92,10 @@ public class RoleController {
             return Response.ok().build();
 
         } catch (ArcUndeclaredThrowableException e) {
-            return Response.status(Response.Status.CONFLICT).entity("remove associated users before deleting the role").type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.CONFLICT).entity(new ErrorMessage("remove associated users before deleting the role")).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
                     .build();
         }
     }

@@ -3,6 +3,7 @@ package it.paa.controller;
 import it.paa.model.Project;
 import it.paa.service.EmployeeProjectService;
 import it.paa.service.ProjectService;
+import it.paa.util.ErrorMessage;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityExistsException;
@@ -38,22 +39,20 @@ public class EmployeeProjectController {
             Project project = projectService.findById(idProject);
             if (!project.getUser().getUsername().equals(currentUsername) && securityContext.isUserInRole("project manager")) {
                 return Response.status(Response.Status.FORBIDDEN)
-                        .entity("You are not authorized to update this project")
-                        .type(MediaType.TEXT_PLAIN)
+                        .entity(new ErrorMessage("You are not authorized to update this project"))
                         .build();
 
             }
             employeeProjectService.addEmployeeToProject(idProject, idEmployee);
 
-            return Response.status(Response.Status.CREATED).entity("project correctly assigned to the employee").type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.CREATED).entity(new ErrorMessage("project correctly assigned to the employee")).build();
         } catch (NotFoundException e) {
 
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         } catch (EntityExistsException e) {
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.CONFLICT).entity(new ErrorMessage(e.getMessage())).build();
         }
     }
 
@@ -68,17 +67,15 @@ public class EmployeeProjectController {
             Project project = projectService.findById(idProject);
             if (!project.getUser().getUsername().equals(currentUsername) && securityContext.isUserInRole("project manager")) {
                 return Response.status(Response.Status.FORBIDDEN)
-                        .entity("You are not authorized to update this project")
-                        .type(MediaType.TEXT_PLAIN)
+                        .entity(new ErrorMessage("You are not authorized to update this project"))
                         .build();
             }
             employeeProjectService.removeEmployeeFromProject(idProject, idEmployee);
 
-            return Response.ok().entity("Employee removed from the project.").type(MediaType.TEXT_PLAIN).build();
+            return Response.ok().entity(new ErrorMessage("Employee removed from the project.")).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         }
     }

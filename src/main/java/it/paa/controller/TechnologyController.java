@@ -6,6 +6,7 @@ import it.paa.dto.TechnologyDto;
 import it.paa.model.Project;
 import it.paa.model.Technology;
 import it.paa.service.TechnologyService;
+import it.paa.util.ErrorMessage;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
@@ -49,8 +50,7 @@ public class TechnologyController {
             return Response.ok(technology).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         }
     }
@@ -68,12 +68,12 @@ public class TechnologyController {
                         .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
                         .collect(Collectors.joining("\n"));
 
-                return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).type(MediaType.TEXT_PLAIN).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage(errorMessage)).build();
             }
             // Controllo se esiste già una tecnologia con lo stesso nome (ignorando il case)
             Technology existingTechnology = technologyService.getTechnologyByNameIgnoreCase(technologyDto.getName());
             if (existingTechnology != null) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("A technology with the same name already exists").type(MediaType.TEXT_PLAIN).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage("A technology with the same name already exists")).build();
             }
 
             Technology technology = new Technology();
@@ -84,10 +84,10 @@ public class TechnologyController {
 
             technologyService.save(technology);
 
-            return Response.status(Response.Status.CREATED).type(MediaType.TEXT_PLAIN).entity("Technology created successfully").build();
+            return Response.status(Response.Status.CREATED).entity(new ErrorMessage("Technology created successfully")).build();
 
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("a technology with the same name already exists").type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage("a technology with the same name already exists")).build();
         }
     }
 
@@ -100,7 +100,7 @@ public class TechnologyController {
             // Controllo se esiste già una tecnologia con lo stesso nome (ignorando il case)
             Technology existingTechnologyDB = technologyService.getTechnologyByNameIgnoreCase(technologyDto.getName());
             if (existingTechnologyDB != null && !existingTechnologyDB.getId().equals(id)) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("A technology with the same name already exists").type(MediaType.TEXT_PLAIN).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage("A technology with the same name already exists")).build();
             }
             Technology existingTechnology = technologyService.findById(id);
 
@@ -118,7 +118,7 @@ public class TechnologyController {
                         .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
                         .collect(Collectors.joining("\n"));
 
-                return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).type(MediaType.TEXT_PLAIN).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage(errorMessage)).build();
             }
             Technology updatedTechnology = technologyService.update(existingTechnology);
             return Response.ok(updatedTechnology).build();
@@ -126,11 +126,10 @@ public class TechnologyController {
         } catch (NotFoundException e) {
 
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("a technology with the same name already exists").type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage("a technology with the same name already exists")).build();
         }
     }
 
@@ -139,16 +138,14 @@ public class TechnologyController {
     public Response deleteTechnology(@PathParam("id") Long id) {
         try {
             technologyService.delete(id);
-            return Response.ok().entity("Technology deleted successfully").type(MediaType.TEXT_PLAIN).build();
+            return Response.ok().entity(new ErrorMessage("Technology deleted successfully")).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         } catch (ArcUndeclaredThrowableException e) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity("remove associations before removing a technology")
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage("remove associations before removing a technology"))
                     .build();
         }
     }
@@ -167,7 +164,7 @@ public class TechnologyController {
 
             return Response.ok(mostCommonTechnology).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.NO_CONTENT).type(MediaType.TEXT_PLAIN).entity("No technology found").build();
+            return Response.status(Response.Status.NO_CONTENT).entity(new ErrorMessage("No technology found")).build();
         }
     }
 }

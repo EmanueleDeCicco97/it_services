@@ -4,6 +4,7 @@ import io.quarkus.arc.ArcUndeclaredThrowableException;
 import it.paa.dto.EmployeeDto;
 import it.paa.model.Employee;
 import it.paa.service.EmployeeService;
+import it.paa.util.ErrorMessage;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
@@ -50,14 +51,13 @@ public class EmployeeController {
             return Response.ok(employee).build();
         } catch (NotFoundException e) {
 
-            return Response.status(Response.Status.NOT_FOUND).type(MediaType.TEXT_PLAIN)
-                    .entity(e.getMessage())
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         }
     }
 
     @POST //metodo per aggiungere un employee
-    @Produces(MediaType.TEXT_PLAIN)
     public Response addEmployee(EmployeeDto employeeDto) {
 
         // Validazione dell'entità Project
@@ -68,7 +68,7 @@ public class EmployeeController {
                     .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
                     .collect(Collectors.joining("\n"));
 
-            return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage(errorMessage)).build();
         }
 
         Employee employee = new Employee();
@@ -79,11 +79,10 @@ public class EmployeeController {
         employee.setSalary(employeeDto.getSalary());
 
         employeeService.save(employee);
-        return Response.status(Response.Status.CREATED).entity("\n" + "Employee created successfully").build();
+        return Response.status(Response.Status.CREATED).entity(new ErrorMessage("Employee created successfully")).build();
     }
 
     @PUT //metodo per aggiornare un employee
-    @Produces(MediaType.TEXT_PLAIN)
     @Path("/{id}")
     public Response updateEmployee(@PathParam("id") Long id, EmployeeDto employeeDto) {
 
@@ -96,7 +95,7 @@ public class EmployeeController {
                         .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
                         .collect(Collectors.joining("\n"));
 
-                return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMessage(errorMessage)).build();
 
             }
 
@@ -105,14 +104,12 @@ public class EmployeeController {
 
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         }
     }
 
     @DELETE //metodo per eliminare un employee
-    @Produces(MediaType.TEXT_PLAIN)
     @Path("/{id}")
     public Response deleteEmployee(@PathParam("id") Long id) {
         try {
@@ -120,13 +117,11 @@ public class EmployeeController {
             return Response.ok().entity("Employee successfully eliminated").build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage(e.getMessage()))
                     .build();
         } catch (ArcUndeclaredThrowableException e) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity("remove associations with clients before removing an employee")
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ErrorMessage("remove associations with clients before removing an employee"))
                     .build();
         }
     }
