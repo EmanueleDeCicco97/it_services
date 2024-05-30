@@ -2,6 +2,7 @@ package it.paa.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.Set;
 
@@ -15,12 +16,15 @@ public class Technology {
     private Long id;
 
     @Column(name = "name", nullable = false, unique = true)
+    @NotEmpty(message = "name cannot be empty")
     private String name;
 
     @Column(name = "description", nullable = false)
+    @NotEmpty(message = "description cannot be empty")
     private String description;
 
     @Column(name = "required_experience_level")
+    @NotEmpty(message = "Ecperience level cannot be empty")
     private String requiredExperienceLevel;
 
     @ManyToMany(mappedBy = "technologies")

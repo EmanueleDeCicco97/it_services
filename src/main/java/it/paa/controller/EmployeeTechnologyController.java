@@ -33,9 +33,6 @@ public class EmployeeTechnologyController {
 
         } catch (EntityExistsException e) {
             return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
-        } catch (IllegalArgumentException e) {
-
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
         }
     }
 
@@ -52,8 +49,6 @@ public class EmployeeTechnologyController {
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
 
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
         }
     }
 

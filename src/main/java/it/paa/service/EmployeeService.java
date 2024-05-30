@@ -115,13 +115,13 @@ public class EmployeeService implements EmployeeRepository {
         // Verifica se l'employee è associato a projects
         Set<Project> projects = employeeToDelete.getProjects();
         if (!projects.isEmpty()) {
-            throw new IllegalStateException("Employee with ID " + id + " is associated with projects. Remove employee from projects first.");
+            throw new NotFoundException("Employee with ID " + id + " is associated with projects. Remove employee from projects first.");
         }
 
         // Verifica se l'employee è associato a technologies
         Set<Technology> technologies = employeeToDelete.getTechnologies();
         if (!technologies.isEmpty()) {
-            throw new IllegalStateException("Employee with ID " + id + " is associated with technologies. Remove employee from technologies first.");
+            throw new NotFoundException("Employee with ID " + id + " is associated with technologies. Remove employee from technologies first.");
         }
 
         em.remove(employeeToDelete);

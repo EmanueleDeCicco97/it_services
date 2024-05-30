@@ -2,6 +2,7 @@ package it.paa.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 
 // i validator li ho messi sul dto
 @Entity
@@ -12,12 +13,15 @@ public class Client {
     private Long id;
 
     @Column(name = "client_name", nullable = false)
+    @NotEmpty(message = "Client name cannot be empty")
     private String name;
 
     @Column(name = "sector", nullable = false)
+    @NotEmpty(message = "sector cannot be empty")
     private String sector;
 
     @Column(name = "address")
+    @NotEmpty(message = "Address cannot be empty")
     private String address;
 
 

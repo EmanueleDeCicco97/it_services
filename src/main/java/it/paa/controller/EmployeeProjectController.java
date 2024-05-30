@@ -80,11 +80,6 @@ public class EmployeeProjectController {
                     .entity(e.getMessage())
                     .type(MediaType.TEXT_PLAIN)
                     .build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .type(MediaType.TEXT_PLAIN)
-                    .build();
         }
     }
 }

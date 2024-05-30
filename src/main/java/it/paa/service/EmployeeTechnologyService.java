@@ -7,7 +7,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
@@ -25,7 +24,7 @@ public class EmployeeTechnologyService implements EmployeeTechnologyRepository {
 
     @Override//metodo per associare un employee a una tecnologia
     @Transactional
-    public void addEmployeeToTechnology(Long technologyId, Long employeeId) throws IllegalArgumentException, NotFoundException {
+    public void addEmployeeToTechnology(Long technologyId, Long employeeId) throws NotFoundException {
         // recupero technology e employee
         Employee employee = employeeService.findById(employeeId);
         Technology technology = technologyService.findById(technologyId);
@@ -37,7 +36,7 @@ public class EmployeeTechnologyService implements EmployeeTechnologyRepository {
             }
             // check se il role dell'employee rispetta i requisiti dell'esperienza della tecnologia
             if (!technologyService.isEmployeeExperienceValid(technology.getRequiredExperienceLevel(), employee.getRole())) {
-                throw new IllegalArgumentException("This employee does not satisfy requirement for experience level: " + technology.getRequiredExperienceLevel());
+                throw new NotFoundException("This employee does not satisfy requirement for experience level: " + technology.getRequiredExperienceLevel());
             }
             // aggiunge la technology all'elenco delle technologies di employee
             employee.addTechnology(technology);
@@ -56,7 +55,7 @@ public class EmployeeTechnologyService implements EmployeeTechnologyRepository {
         Technology technology = technologyService.findById(technologyId);
 
         if (!technology.getEmployees().contains(employee)) {
-            throw new IllegalArgumentException("Employee with ID " + employeeId + " is not associated with technology ID " + technologyId + ".");
+            throw new NotFoundException("Employee with ID " + employeeId + " is not associated with technology ID " + technologyId + ".");
         }
 
         employee.getTechnologies().remove(technology);

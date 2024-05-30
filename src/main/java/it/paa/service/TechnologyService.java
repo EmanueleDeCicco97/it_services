@@ -45,7 +45,7 @@ public class TechnologyService implements TechnologyRepository {
 
     @Transactional
     @Override //metodo per aggiornare una tecnologia
-    public Technology update(Technology technology) throws NotFoundException, IllegalArgumentException {
+    public Technology update(Technology technology) throws NotFoundException {
         entityManager.merge(technology);
         return technology;
     }

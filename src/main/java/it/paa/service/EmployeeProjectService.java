@@ -9,6 +9,7 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class EmployeeProjectService implements EmployeeProjectRepository {
@@ -52,7 +53,7 @@ public class EmployeeProjectService implements EmployeeProjectRepository {
         Employee employee = employeeService.findById(employeeId);
 
         if (!project.getEmployees().contains(employee)) {
-            throw new IllegalArgumentException("Employee with ID " + employeeId + " is not associated with project ID " + projectId + ".");
+            throw new NotFoundException("Employee with ID " + employeeId + " is not associated with project ID " + projectId + ".");
         }
 
         employee.getProjects().remove(project);

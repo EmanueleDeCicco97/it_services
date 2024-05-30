@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -20,19 +23,24 @@ public class Employee {
     private Long id;
 
     @Column(name = "name", nullable = false)
+    @NotEmpty(message ="name cannot be empty")
     private String name;
 
     @Column(name = "surname", nullable = false)
+    @NotEmpty(message = "surname cannot be empty")
     private String surname;
 
     @Column(name = "role", nullable = false)
+    @NotEmpty(message = "role cannot be empty")
     private String role;
 
     @Column(name = "hire_date")
     @JsonFormat(pattern = "dd-MM-yyyy")
+    @NotNull(message = "hiredate cannot be empty")
     private LocalDate hireDate;
 
     @Column(name = "salary")
+    @NotBlank(message = "salary cannot be empty")
     private double salary;
 
     @ManyToMany

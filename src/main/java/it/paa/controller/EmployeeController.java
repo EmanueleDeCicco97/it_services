@@ -128,11 +128,6 @@ public class EmployeeController {
                     .entity("remove associations with clients before removing an employee")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
-        }catch (IllegalStateException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                   .entity(e.getMessage())
-                   .type(MediaType.TEXT_PLAIN)
-                   .build();
         }
     }
 }
