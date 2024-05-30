@@ -47,7 +47,7 @@ public class UserService implements UserRepository {
 
     public User getUserById(Long id) {
         User user = entityManager.find(User.class, id);
-        if (user == null || user.getUsername().isEmpty()|| user.getUsername().isBlank()) {
+        if (user == null || user.getUsername().isEmpty() || user.getUsername().isBlank()) {
             throw new NotFoundException("User not found");
         }
         return user;
@@ -107,8 +107,8 @@ public class UserService implements UserRepository {
         if (user == null) {
             throw new NotFoundException("User with id " + userId + " does not exist");
         }
-            user.setRole(null);
-            updateUser(user, user.getId());
+        user.setRole(null);
+        updateUser(user, user.getId());
 
     }
 

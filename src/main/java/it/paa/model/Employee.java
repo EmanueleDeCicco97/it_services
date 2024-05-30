@@ -23,7 +23,7 @@ public class Employee {
     private Long id;
 
     @Column(name = "name", nullable = false)
-    @NotEmpty(message ="name cannot be empty")
+    @NotEmpty(message = "name cannot be empty")
     private String name;
 
     @Column(name = "surname", nullable = false)

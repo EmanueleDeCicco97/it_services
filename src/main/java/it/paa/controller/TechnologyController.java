@@ -153,7 +153,7 @@ public class TechnologyController {
         }
     }
 
-//    //•	Esercitazione 2: Creare un endpoint per trovare le tecnologie più richieste dai clienti e visualizzare i dettagli
+    //    //•	Esercitazione 2: Creare un endpoint per trovare le tecnologie più richieste dai clienti e visualizzare i dettagli
 //    // dei progetti in cui sono utilizzate queste tecnologie.
 //    @GET
 //    @RolesAllowed({"admin", "project manager"})

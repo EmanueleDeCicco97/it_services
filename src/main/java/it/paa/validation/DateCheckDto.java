@@ -7,9 +7,11 @@ import java.lang.annotation.*;
 
 @Target({ElementType.TYPE}) //Indica che questa annotazione può essere applicata solo a elementi di tipo classe.
 
-@Retention(RetentionPolicy.RUNTIME)// Indica che questa annotazione deve essere conservata e resa disponibile in fase di runtime, in modo che
-                                   // possa essere utilizzata per la convalida dei dati a runtime.
-@Constraint(validatedBy = DateCheckValidatorDto.class) //Specifica la classe che implementa la logica di validazione per questa annotazione.
+@Retention(RetentionPolicy.RUNTIME)
+// Indica che questa annotazione deve essere conservata e resa disponibile in fase di runtime, in modo che
+// possa essere utilizzata per la convalida dei dati a runtime.
+@Constraint(validatedBy = DateCheckValidatorDto.class)
+//Specifica la classe che implementa la logica di validazione per questa annotazione.
 
 
 @Documented //Indica che questa annotazione dovrebbe essere inclusa nella documentazione generata automaticamente.
